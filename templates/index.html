@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gimnasio</title>
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <style>
+        .centered-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40vh; /* Ajusta la altura para ocupar toda la pantalla verticalmente */
+        }
+
+        .centered-logo img {
+            max-width: 50%; /* Tamaño máximo del 25% de la pantalla */
+            max-height: 50%; /* Ajusta la altura proporcionalmente */
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container-fluid">
+        <h1 class="text-center alert alert-success">Administración Gimnasio</h1>
+        
+        <div class="d-flex flex-column align-items-center">
+            <div class="col-sm-4">
+                <form action="/registro">
+                    <input class="btn btn-outline-success btn-block" type="submit" value="Registro de Miembros">
+                </form>
+            </div>
+            <br>
+            <div class="col-sm-4">
+                <form action="/registro_g">
+                    <input class="btn btn-outline-success btn-block" type="submit" value="Registro Gerente">
+                </form>
+            </div>
+            <br>
+            <div class="col-sm-4">
+                <form action="/admin_miem">
+                    <input class="btn btn-outline-success btn-block" type="submit" value="Gestionar Miembros">
+                </form>
+            </div>
+            <br>
+            <div class="col-sm-4">
+                <form action="/admin_gerente">
+                    <input class="btn btn-outline-success btn-block" type="submit" value="Gestionar Gerentes">
+                </form>
+            </div>
+            <br>
+            <div class="col-sm-4">
+                <form action="/reconocimiento">
+                    <input class="btn btn-outline-success btn-block" type="submit" value="Control de Acceso">
+                </form>
+            </div>
+            <br>
+            <div class="col-sm-4">
+                <form action="/reporte">
+                    <input class="btn btn-outline-success btn-block" type="submit" value="Reporte de Acceso">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="centered-logo">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo del Gimnasio">
+    </div>
+</body>
+</html>

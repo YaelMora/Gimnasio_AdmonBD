@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Gerente</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function validarContraseñaDirector() {
+            // Solicitar la contraseña del administrador
+            const admin_contraseña = prompt("Confirme este registro con la contraseña de administrador:");
+
+            // Realizar petición AJAX para validar la contraseña
+            return $.ajax({
+                url: '/validar_admin',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ 'admin_contraseña': admin_contraseña }),
+                success: function (response) {
+                    if (response.success) {
+                        return true; // Si la contraseña es válida, permitir el envío del formulario
+                    } else {
+                        alert("Contraseña incorrecta. Inténtelo de nuevo.");
+                        return false; // Cancelar el envío del formulario
+                    }
+                },
+                error: function () {
+                    alert("Error al validar la contraseña.");
+                    return false;
+                },
+                async: false // Esto permite que la validación sea síncrona y espere la respuesta del servidor
+            }).responseJSON.success;
+        }
+
+        function validarContraseñas() {
+            const contraseña = document.getElementById("contraseña_g").value;
+            const confirmacion = document.getElementById("confirmar_contraseña_g").value;
+
+            if (contraseña !== confirmacion) {
+                alert("Las contraseñas no coinciden. Por favor, inténtelo de nuevo.");
+                return false; // Cancelar el envío del formulario
+            }
+
+            return true; // Las contraseñas coinciden
+        }
+
+        function validarFormulario() {
+            return validarContraseñas() && validarContraseñaDirector();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center alert alert-success">Registro de Nuevo Gerente</h1>
+        <div class="row text-center mb-3">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <a href="/" class="btn btn-outline-success btn-block">Volver</a>
+            </div>
+        </div>
+        <form id="registroGerenteForm" action="/registro_g" method="POST" onsubmit="return validarFormulario()">
+            <div class="form-group row">
+                <label for="nombre_g" class="col-sm-3 col-form-label">Nombre:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="nombre_g" name="nombre_g" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="apellido_g" class="col-sm-3 col-form-label">Apellido:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="apellido_g" name="apellido_g" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="telefono_g" class="col-sm-3 col-form-label">Teléfono:</label>
+                <div class="col-sm-9">
+                    <input type="tel" class="form-control" id="telefono_g" name="telefono_g" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="email_g" class="col-sm-3 col-form-label">Correo:</label>
+                <div class="col-sm-9">
+                    <input type="email" class="form-control" id="email_g" name="email_g" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="RFC" class="col-sm-3 col-form-label">RFC:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="RFC" name="RFC" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="contraseña_g" class="col-sm-3 col-form-label">Contraseña:</label>
+                <div class="col-sm-9">
+                    <input type="password" class="form-control" id="contraseña_g" name="contraseña_g" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="confirmar_contraseña_g" class="col-sm-3 col-form-label">Confirmar Contraseña:</label>
+                <div class="col-sm-9">
+                    <input type="password" class="form-control" id="confirmar_contraseña_g" name="confirmar_contraseña_g" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-success ml-auto">Registrar</button>
+        </form>
+    </div>
+
+    {% if registro %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Registro Completo',
+            text: 'Se registró correctamente al gerente',
+        }).then(() => {
+            window.location.href = '/admin';
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

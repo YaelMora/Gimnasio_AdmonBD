@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Empleados</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container-fluid"></div>
+        <h1 class="text-center alert alert-success">Administración de Gerentes</h1>
+        
+        <div class="row text-center">
+            <div class="col-sm-3">
+                <a href="/registro_g" class="btn btn-outline-success btn-block">Registro Nuevo Gerente</a>
+            </div>
+            <div class="col-sm-3">
+                <a href="/registro" class="btn btn-outline-success btn-block">Registro Nuevo Miembro</a>
+            </div>
+            <div class="col-sm-3">
+                <a href="/admin_miem" class="btn btn-outline-success btn-block">Administración de Miembros</a>
+            </div>
+            <div class="col-sm-3">
+                <a href="/" class="btn btn-outline-success btn-block">Inicio</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container my-4">
+        <form method="GET" action="{{ url_for('admin_gerente') }}">
+            <div class="input-group">
+                <input type="text" name="buscar" class="form-control" placeholder="Buscar por nombre o apellido" required>
+                <div class="input-group-append">
+                    <button class="btn btn-success" type="submit">Buscar</button>
+                </div>
+                <div class="input-group-append">
+                    <a class="btn btn-outline-success" href="{{ url_for('admin_gerente') }}">Mostrar Todos</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Teléfono</th>
+                <th scope="col">Email</th>
+                <th scope="col">RFC</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gerente in gerentes %}
+                <tr>
+                    <td>{{ gerente[0] }}</td>
+                    <td>{{ gerente[1] }}</td>
+                    <td>{{ gerente[2] }}</td>
+                    <td>{{ gerente[3] }}</td>
+                    <td>{{ gerente[4] }}</td>
+                    <td>{{ gerente[5] }}</td>
+                    <td>
+                        <form action="/cambios_g/{{ gerente[0] }}" method="GET">
+                            <button type="submit" class="btn btn-primary">Cambios</button>
+                        </form>
+                        <form action="/eliminar_g/{{ gerente[0] }}" method="POST" onsubmit="return confirmDelete()">
+                            <input type="hidden" name="gerente_id" value="{{ gerente[0] }}">
+                            <input type="hidden" name="confirmacion" value="admin">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function confirmDelete() {
+            return confirm("¿Está seguro de que desea eliminar este registro?");
+        }
+    </script>
+    
+    {% if actualizar %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Actualización Completada',
+            text: 'Se actualizaron correctamente los datos del gerente',
+        }).then(() => {
+            window.location.href = '/admin_gerente';
+        });
+    </script>
+    {% endif %}
+    
+    {% if eliminar %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Eliminación Exitosa',
+            text: 'Se eliminó correctamente al gerente',
+        }).then(() => {
+            window.location.href = '/admin_gerente';
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

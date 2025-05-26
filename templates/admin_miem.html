@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gimnasio</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center alert alert-success">Administración de Miembros</h1>
+        
+        <div class="row text-center">
+            <div class="col-sm-3">
+                <a href="/registro_g" class="btn btn-outline-success btn-block">Registro Nuevo Empleado</a>
+            </div>
+            <div class="col-sm-3">
+                <a href="/registro" class="btn btn-outline-success btn-block">Registro Nuevo Miembro</a>
+            </div>
+            <div class="col-sm-3">
+                <a href="/admin_gerente" class="btn btn-outline-success btn-block">Administración de Gerente</a>
+            </div>
+            <div class="col-sm-3">
+                <a href="/" class="btn btn-outline-success btn-block">Inicio</a>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+
+    <!-- Formulario de búsqueda -->
+    <div class="container my-4">
+        <form method="POST" action="{{ url_for('admin_miembros') }}">
+            <div class="input-group">
+                <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre o apellido" required>
+                <div class="input-group-append">
+                    <button class="btn btn-success" type="submit">Buscar</button>
+                </div>
+                <div class="input-group-append">
+                    <a class="btn btn-outline-success" href="{{ url_for('admin_miembros') }}">Mostrar Todos</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Email</th>
+                <th scope="col">Fecha Inicio</th>
+                <th scope="col">Fecha Vencimiento</th>
+                <th scope="col">Estado Membresia</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for miembro in miembros %}
+                <tr>
+                    <td>{{ miembro[0] }}</td>
+                    <td>{{ miembro[1] }}</td>
+                    <td>{{ miembro[2] }}</td>
+                    <td>{{ miembro[3] }}</td>
+                    <td>{{ miembro[4] }}</td>
+                    <td>{{ miembro[5] }}</td>
+                    <td>{{ miembro[6] }}</td>
+                    <td>{{ miembro[7] }}</td>
+                    <td>{{ miembro[8] }}</td>
+                    <td>
+                        <form action="/cambios_m/{{ miembro[0] }}" method="GET">
+                            <button type="submit" class="btn btn-primary">Cambios</button>
+                        </form>
+                        <form action="/eliminar_m/{{ miembro[0] }}" method="POST" onsubmit="return confirmDelete()">
+                            <input type="hidden" name="miembro_id" value="{{ miembro[0] }}">
+                            <input type="hidden" name="confirmacion" value="admin">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function confirmDelete() {
+            return confirm("¿Está seguro de que desea eliminar este registro?");
+        }
+    </script>
+    {% if eliminar %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Eliminación Exitosa',
+            text: 'Se elimino correctamente al miembro',
+        }).then(() => {
+            window.location.href = '/admin_miem';
+        });
+    </script>
+    {% endif %}
+    
+    {% if actualizar %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Actualización Completada',
+            text: 'Se actualizaron correctamente los datos del miembro',
+        }).then(() => {
+            window.location.href = '/admin_miem';
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

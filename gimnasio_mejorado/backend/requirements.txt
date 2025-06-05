@@ -1,0 +1,8 @@
+Flask
+Flask-Cors
+bcrypt
+python-dotenv
+Pillow
+qrcode
+pywhatkit
+openpyxl

@@ -1,0 +1,42 @@
+Date: 4/6/2025
+Time: 11:20
+Phone Number: +525512442481
+Image: D:\UPIICSA\10mo Semestre\ADMON. DE BASES DE DATOS\gym\gimnasio mejorado\backend\static\uploads\member_images\qr_miembro_5_20250604112026.png
+Caption: Aquí está tu código QR de acceso para el gimnasio. ID: 5
+--------------------
+Date: 4/6/2025
+Time: 11:20
+Phone Number: +525512442481
+Image: D:\UPIICSA\10mo Semestre\ADMON. DE BASES DE DATOS\gym\gimnasio mejorado\backend\static\uploads\member_images\qr_miembro_5_20250604112037.png
+Caption: Aquí está tu código QR de acceso para el gimnasio. ID: 5
+--------------------
+Date: 4/6/2025
+Time: 12:18
+Phone Number: +525550891035
+Image: D:\UPIICSA\10mo Semestre\ADMON. DE BASES DE DATOS\gym\gimnasio mejorado\backend\static\uploads\member_images\qr_miembro_6_20250604121835.png
+Caption: Código QR de acceso para el gimnasio. ID: 6
+--------------------
+Date: 4/6/2025
+Time: 12:19
+Phone Number: +525550981035
+Image: D:\UPIICSA\10mo Semestre\ADMON. DE BASES DE DATOS\gym\gimnasio mejorado\backend\static\uploads\member_images\qr_miembro_6_20250604121933.png
+Caption: Código QR de acceso para el gimnasio. ID: 6
+--------------------
+Date: 4/6/2025
+Time: 12:20
+Phone Number: +525550981035
+Image: D:\UPIICSA\10mo Semestre\ADMON. DE BASES DE DATOS\gym\gimnasio mejorado\backend\static\uploads\member_images\qr_miembro_6_20250604122009.png
+Caption: Código QR de acceso para el gimnasio. ID: 6
+--------------------
+Date: 4/6/2025
+Time: 18:51
+Phone Number: +525512442481
+Image: D:\UPIICSA\10mo Semestre\ADMON. DE BASES DE DATOS\gym\gimnasio mejorado\backend\static\uploads\qrs\Omar-Mora_5.png
+Caption: Código QR de acceso para el gimnasio. ID: 5
+--------------------
+Date: 4/6/2025
+Time: 18:51
+Phone Number: +525550981035
+Image: D:\UPIICSA\10mo Semestre\ADMON. DE BASES DE DATOS\gym\gimnasio mejorado\backend\static\uploads\qrs\Adriana-Flores_6.png
+Caption: Código QR de acceso para el gimnasio. ID: 6
+--------------------

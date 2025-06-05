@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Acceso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-gray-100 min-h-screen p-4 sm:p-6">
+    <header class="mb-6">
+        <div class="max-w-7xl mx-auto flex justify-start items-center mb-4">
+            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm sm:text-base">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                Volver
+            </a>
+             <h1 class="text-xl sm:text-3xl font-bold text-gray-800 text-center flex-grow">Reporte de Acceso</h1>
+        </div>
+        <!-- Controles de Filtro y Descarga -->
+        <div class="max-w-7xl mx-auto bg-white p-4 rounded-lg shadow-md mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div>
+                    <label for="fechaInicioReporte" class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio:</label>
+                    <input type="date" id="fechaInicioReporte" name="fechaInicioReporte" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="fechaFinReporte" class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin:</label>
+                    <input type="date" id="fechaFinReporte" name="fechaFinReporte" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <button id="btnDescargarExcel" class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out text-sm">
+                    Descargar Excel
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-2xl">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">No. Acceso</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Fecha</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Hora</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Estado</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">ID Miembro</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Nombre Miembro</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Método</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaReporteBody" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+         <p id="noDataMessageReport" class="text-center text-gray-500 py-8 hidden">No hay registros de acceso.</p>
+    </main>
+
+    <!-- Modal Validar Gerente para Descarga -->
+    <div id="validateManagerDownloadModal" class="modal hidden modal-global">
+        <div class="modal-content-global">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">Validar Gerente para Descargar Reporte</h2>
+            <form id="validateManagerDownloadForm" class="space-y-4">
+                <div>
+                    <label for="idGerenteDownload" class="block text-sm font-medium text-gray-700 mb-1">ID o Correo del Gerente</label>
+                    <input type="text" id="idGerenteDownload" name="idGerenteDownload" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
+                </div>
+                <div>
+                    <label for="contrasenaGerenteDownload" class="block text-sm font-medium text-gray-700 mb-1">Contraseña del Gerente</label>
+                    <input type="password" id="contrasenaGerenteDownload" name="contrasenaGerenteDownload" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button type="button" onclick="closeModal('validateManagerDownloadModal'); resetForm('validateManagerDownloadForm');" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-150 ease-in-out w-full">Cancelar</button>
+                    <button type="submit" id="btnConfirmDownload" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full">Confirmar y Descargar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        const tablaReporteBody = document.getElementById('tablaReporteBody');
+        const noDataMessageReport = document.getElementById('noDataMessageReport');
+        const fechaInicioReporteInput = document.getElementById('fechaInicioReporte');
+        const fechaFinReporteInput = document.getElementById('fechaFinReporte');
+        const btnDescargarExcel = document.getElementById('btnDescargarExcel');
+        const validateManagerDownloadForm = document.getElementById('validateManagerDownloadForm');
+        const btnConfirmDownload = document.getElementById('btnConfirmDownload');
+
+        // Establecer fechas por defecto (opcional, ej. mes actual)
+        function setDefaultDates() {
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            fechaInicioReporteInput.value = firstDayOfMonth.toISOString().split('T')[0];
+            fechaFinReporteInput.value = lastDayOfMonth.toISOString().split('T')[0];
+        }
+
+
+        async function cargarReporte() {
+            // Esta función podría filtrar por defecto o cargar todos si no hay fechas
+            // Por ahora, la tabla principal muestra todos los accesos.
+            // La descarga usará los filtros de fecha.
+            try {
+                showNotification('Cargando reporte de acceso...', 'info', 1500);
+                const logs = await obtenerReporteAcceso();
+                renderAccessTable(logs);
+            } catch (error) {
+                showNotification(`Error al cargar el reporte: ${error.message}`, 'error');
+                noDataMessageReport.classList.remove('hidden');
+                noDataMessageReport.textContent = 'Error al cargar datos. Intente de nuevo.';
+            }
+        }
+
+        function renderAccessTable(logs) {
+            tablaReporteBody.innerHTML = ''; 
+            if (!logs || logs.length === 0) {
+                noDataMessageReport.classList.remove('hidden');
+                noDataMessageReport.textContent = 'No hay registros de acceso.';
+                return;
+            }
+            noDataMessageReport.classList.add('hidden');
+            logs.forEach(log => {
+                const row = tablaReporteBody.insertRow();
+                const metodo = log.metodo_verificacion ? log.metodo_verificacion.replace(/_/g, ' ') : 'Desconocido';
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${log.noAcceso}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${log.fechaIngreso}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${log.horaIngreso}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${log.estadoAcceso.toLowerCase() === 'ingreso' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}">
+                            ${log.estadoAcceso}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${log.idMiembro || 'N/A'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${log.nombreMiembro || 'Desconocido'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 capitalize">${metodo}</td>
+                `;
+            });
+        }
+
+        btnDescargarExcel?.addEventListener('click', () => {
+            const fechaInicio = fechaInicioReporteInput.value;
+            const fechaFin = fechaFinReporteInput.value;
+
+            if (!fechaInicio || !fechaFin) {
+                showNotification("Por favor, seleccione un rango de fechas para el reporte.", "error");
+                return;
+            }
+            if (new Date(fechaInicio) > new Date(fechaFin)) {
+                showNotification("La fecha de inicio no puede ser posterior a la fecha de fin.", "error");
+                return;
+            }
+            openModal('validateManagerDownloadModal');
+        });
+
+        validateManagerDownloadForm?.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const idGerente = document.getElementById('idGerenteDownload').value;
+            const contrasenaGerente = document.getElementById('contrasenaGerenteDownload').value;
+            const fechaInicio = fechaInicioReporteInput.value;
+            const fechaFin = fechaFinReporteInput.value;
+
+            if (!idGerente || !contrasenaGerente) {
+                showNotification("ID y contraseña del gerente son requeridos.", "error");
+                return;
+            }
+
+            if (btnConfirmDownload) {
+                btnConfirmDownload.disabled = true;
+                btnConfirmDownload.textContent = 'Procesando...';
+            }
+
+            try {
+                showNotification('Validando gerente y generando reporte...', 'info', 3000);
+                const filtrosConAuth = {
+                    fecha_inicio: fechaInicio,
+                    fecha_fin: fechaFin,
+                    idGerente: idGerente,
+                    contrasenaGerente: contrasenaGerente
+                };
+                const descarga = await descargarReporteAccesoExcel(filtrosConAuth);
+                if (descarga.success) {
+                    showNotification(descarga.message, 'success', 4000);
+                }
+                closeModal('validateManagerDownloadModal');
+                resetForm('validateManagerDownloadForm');
+            } catch (error) {
+                showNotification(`Error al descargar el reporte: ${error.message}`, 'error', 5000);
+            } finally {
+                if (btnConfirmDownload) {
+                    btnConfirmDownload.disabled = false;
+                    btnConfirmDownload.textContent = 'Confirmar y Descargar';
+                }
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setDefaultDates(); // Establecer fechas por defecto al cargar
+            cargarReporte(); // Cargar la tabla principal
+        });
+    </script>
+</body>
+</html>

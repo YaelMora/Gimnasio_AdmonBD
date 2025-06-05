@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Miembros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .action-button { @apply px-2 py-1 text-xs font-medium rounded-md; } /* Un poco más pequeño */
+        .edit-button { @apply bg-yellow-400 hover:bg-yellow-500 text-yellow-800 action-button; }
+        .delete-button { @apply bg-red-500 hover:bg-red-600 text-white action-button; }
+        .qr-generate-button { @apply bg-blue-500 hover:bg-blue-600 text-white action-button; }
+        .qr-send-button { @apply bg-teal-500 hover:bg-teal-600 text-white action-button; }
+        #qrImageModal img { max-width: 80%; max-height: 80vh; margin: auto; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 sm:p-6">
+    <header class="mb-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm sm:text-base">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                Inicio
+            </a>
+            <h1 class="text-xl sm:text-3xl font-bold text-gray-800 text-center flex-grow">Administración de Miembros</h1>
+            <a href="registro_miembro.html" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg shadow-md text-xs sm:text-sm whitespace-nowrap">
+                + Registrar Nuevo
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-2xl">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Id</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Nombre</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Apellido</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Teléfono</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Correo</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Estado</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-1/4">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaMiembrosBody" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+        <p id="noDataMessage" class="text-center text-gray-500 py-8 hidden">No hay miembros registrados.</p>
+    </main>
+
+    <!-- Modal Editar Miembro (sin cambios significativos aquí, se omite por brevedad) -->
+    <div id="editMemberModal" class="modal hidden modal-global">
+        <div class="modal-content-global">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center">Cambios de Datos Miembro</h2>
+            <form id="editMemberForm" class="space-y-5">
+                <input type="hidden" id="editMemberId" name="memberId">
+                <div><label for="editNombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label><input type="text" id="editNombre" name="nombre" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required></div>
+                <div><label for="editApellido" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label><input type="text" id="editApellido" name="apellido" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required></div>
+                <div><label for="editTelefono" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label><input type="tel" id="editTelefono" name="telefono" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"></div>
+                <div><label for="editCorreo" class="block text-sm font-medium text-gray-700 mb-1">Correo</label><input type="email" id="editCorreo" name="correo" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"></div>
+                <div><label for="editContrasenaMiembro" class="block text-sm font-medium text-gray-700 mb-1">Nueva Contraseña (dejar en blanco para no cambiar)</label><input type="password" id="editContrasenaMiembro" name="contrasena" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" minlength="6"></div>
+                <div><label for="editFechaVencimiento" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Vencimiento (Actual)</label><input type="date" id="editFechaVencimiento" name="fechaVencimiento" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Renovar/Cambiar Membresía</label><select id="editDuracionMembresia" name="duracionMembresia" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"><option value="">No cambiar/No renovar</option><option value="1 Mes">1 Mes</option><option value="3 Meses">3 Meses</option><option value="6 Meses">6 Meses</option></select></div>
+                <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="button" onclick="closeModal('editMemberModal'); resetForm('editMemberForm');" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-150 ease-in-out w-full">Cancelar</button><button type="submit" id="btnUpdateMember" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full">Actualizar</button></div>
+            </form>
+        </div>
+    </div>
+    <div id="deleteConfirmModal" class="modal hidden modal-global"> /* ... (sin cambios) ... */ </div>
+
+    <!-- Modal para mostrar el QR generado -->
+    <div id="qrImageModal" class="modal hidden modal-global items-center justify-center">
+        <div class="modal-content-global p-4 text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Código QR Generado</h3>
+            <img id="generatedQrImage" src="#" alt="Código QR del Miembro" class="mb-4 block mx-auto">
+            <p id="qrImagePath" class="text-xs text-gray-500 mb-4"></p>
+            <button onclick="closeModal('qrImageModal')" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">Cerrar</button>
+        </div>
+    </div>
+
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        const tablaMiembrosBody = document.getElementById('tablaMiembrosBody');
+        const noDataMessage = document.getElementById('noDataMessage');
+        const editMemberForm = document.getElementById('editMemberForm');
+        const btnUpdateMember = document.getElementById('btnUpdateMember');
+        const deleteMemberIdInput = document.getElementById('deleteMemberId');
+        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+        const generatedQrImage = document.getElementById('generatedQrImage');
+        const qrImagePath = document.getElementById('qrImagePath');
+
+        let currentMembers = [];
+
+        async function cargarMiembros() { /* ... (igual que antes) ... */ }
+        function renderTable(members) {
+            tablaMiembrosBody.innerHTML = ''; 
+            if (!members || members.length === 0) {
+                noDataMessage.classList.remove('hidden');
+                noDataMessage.textContent = 'No hay miembros registrados.';
+                return;
+            }
+            noDataMessage.classList.add('hidden');
+
+            members.forEach(member => {
+                const row = tablaMiembrosBody.insertRow();
+                // Reducir las columnas mostradas para hacer espacio a los botones
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${member.id}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${member.nombre} ${member.apellido}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${member.telefono || 'N/A'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${member.correo || 'N/A'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${member.estado_membresia === 'activa' ? 'bg-green-100 text-green-800' : (member.estado_membresia === 'vencida' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')}">
+                            ${member.estado_membresia}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 space-x-1 flex items-center">
+                        <button onclick="abrirModalEditar(${member.id})" class="edit-button" title="Editar Miembro">Editar</button>
+                        <button onclick="abrirModalEliminar(${member.id})" class="delete-button" title="Eliminar Miembro">Eliminar</button>
+                        <button onclick="handleGenerarQR(${member.id}, this)" class="qr-generate-button" title="Generar y Guardar QR">Gen. QR</button> 
+                        <button onclick="handleEnviarQRGuardado(${member.id}, this)" class="qr-send-button" title="Enviar QR por WhatsApp">Enviar QR</button> 
+                    </td>
+                `;
+            });
+        }
+        
+        // Las funciones abrirModalEditar, editMemberForm submit, abrirModalEliminar, confirmDeleteButton click
+        // son iguales a la versión anterior. Se omiten por brevedad.
+        // Reemplazar con el código de la versión anterior si es necesario.
+        async function cargarMiembros() {
+            try {
+                showNotification('Cargando miembros...', 'info', 1500);
+                currentMembers = await obtenerMiembros();
+                renderTable(currentMembers);
+            } catch (error) {
+                console.error("Error en cargarMiembros:", error);
+                showNotification(`Error al cargar miembros: ${error.message}`, 'error');
+                tablaMiembrosBody.innerHTML = ''; 
+                noDataMessage.classList.remove('hidden');
+                noDataMessage.textContent = 'Error al cargar datos. Revise la consola para más detalles.';
+            }
+        }
+        function abrirModalEditar(memberId) {
+            const member = currentMembers.find(m => m.id === memberId);
+            if (!member) { showNotification("Miembro no encontrado.", "error"); return; }
+            document.getElementById('editMemberId').value = member.id;
+            document.getElementById('editNombre').value = member.nombre;
+            document.getElementById('editApellido').value = member.apellido;
+            document.getElementById('editTelefono').value = member.telefono || '';
+            document.getElementById('editCorreo').value = member.correo || ''; 
+            document.getElementById('editContrasenaMiembro').value = ''; 
+            document.getElementById('editFechaVencimiento').value = member.fechaVencimiento || '';
+            document.getElementById('editDuracionMembresia').value = ""; 
+            openModal('editMemberModal');
+        }
+        editMemberForm?.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const memberId = document.getElementById('editMemberId').value;
+            const formData = new FormData(this);
+            const dataToUpdate = {};
+            formData.forEach((value, key) => {
+                if (key === 'contrasena' && !value) { return; }
+                if (key !== 'memberId') {
+                     if (value || key === 'telefono' || key === 'correo') { 
+                        dataToUpdate[key] = value;
+                    }
+                }
+            });
+            if (dataToUpdate.duracionMembresia === "") delete dataToUpdate.duracionMembresia;
+            if (dataToUpdate.contrasena && dataToUpdate.contrasena.length < 6) {
+                showNotification("La nueva contraseña debe tener al menos 6 caracteres.", "error");
+                return;
+            }
+            if (Object.keys(dataToUpdate).length === 0 && !(document.getElementById('editContrasenaMiembro').value)) { 
+                showNotification("No hay cambios para actualizar.", "info");
+                closeModal('editMemberModal');
+                return;
+            }
+            if (btnUpdateMember) { btnUpdateMember.disabled = true; btnUpdateMember.textContent = 'Actualizando...';}
+            try {
+                showNotification('Actualizando miembro...', 'info', 2000);
+                await actualizarMiembro(memberId, dataToUpdate);
+                showNotification('Miembro actualizado exitosamente.', 'success');
+                closeModal('editMemberModal');
+                resetForm('editMemberForm');
+                cargarMiembros();
+            } catch (error) { showNotification(`Error al actualizar miembro: ${error.message}`, 'error', 4000);
+            } finally { if (btnUpdateMember) { btnUpdateMember.disabled = false; btnUpdateMember.textContent = 'Actualizar'; } }
+        });
+        function abrirModalEliminar(memberId) { deleteMemberIdInput.value = memberId; openModal('deleteConfirmModal'); }
+        confirmDeleteButton?.addEventListener('click', async () => {
+            const memberId = deleteMemberIdInput.value;
+            const button = confirmDeleteButton;
+            button.disabled = true; button.textContent = 'Eliminando...';
+            try {
+                showNotification('Eliminando miembro...', 'info', 2000);
+                await eliminarMiembro(memberId);
+                showNotification('Miembro eliminado exitosamente.', 'success');
+                closeModal('deleteConfirmModal');
+                cargarMiembros();
+            } catch (error) { showNotification(`Error al eliminar miembro: ${error.message}`, 'error', 4000);
+            } finally { button.disabled = false; button.textContent = 'Aceptar'; }
+        });
+
+
+        async function handleGenerarQR(miembroId, buttonElement) {
+            const originalText = buttonElement.textContent;
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Generando...';
+            showNotification(`Generando QR para miembro ID ${miembroId}...`, 'info', 2000);
+            try {
+                const response = await generarYGuardarQRMiembro(miembroId); // api.js
+                showNotification(response.message || `QR generado y guardado para miembro ${miembroId}.`, 'success', 4000);
+                if (response.qr_image_url && generatedQrImage && qrImagePath) {
+                    // Construir la URL completa si el backend solo devuelve la ruta relativa
+                    const fullQrUrl = `${window.location.origin}${response.qr_image_url.startsWith('/') ? '' : '/'}${response.qr_image_url}`;
+                    generatedQrImage.src = fullQrUrl;
+                    qrImagePath.textContent = `Guardado como: ${response.qr_filename || 'N/A'}`;
+                    openModal('qrImageModal');
+                }
+            } catch (error) {
+                showNotification(`Error al generar QR: ${error.message}`, 'error', 5000);
+            } finally {
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        }
+
+        async function handleEnviarQRGuardado(miembroId, buttonElement) {
+            const originalText = buttonElement.textContent;
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Enviando...';
+            showNotification(`Solicitando envío de QR para miembro ID ${miembroId}...`, 'info', 3000);
+            try {
+                const response = await enviarQRMiembroGuardado(miembroId); // api.js
+                showNotification(response.message || `Solicitud de envío de QR procesada.`, 'success', 5000);
+            } catch (error) {
+                showNotification(`Error al enviar QR: ${error.message}`, 'error', 5000);
+            } finally {
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarMiembros);
+    </script>
+</body>
+</html>

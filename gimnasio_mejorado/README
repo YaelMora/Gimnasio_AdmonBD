@@ -1,0 +1,143 @@
+# Sistema de Gestión de Gimnasio
+
+Este proyecto es un sistema de gestión de gimnasio diseñado para administrar miembros, gerentes, control de acceso y reportes. Cuenta con un frontend basado en HTML, CSS y JavaScript, y un backend desarrollado en Python con Flask y SQLite como base de datos.
+
+## Tecnologías Utilizadas
+
+**Frontend:**
+* HTML5
+* CSS3
+* JavaScript (Vanilla)
+* Tailwind CSS (a través de CDN para un desarrollo rápido de UI)
+
+**Backend:**
+* Python 3
+* Flask (Framework web)
+* SQLite (Base de datos)
+* Flask-CORS (Para manejar solicitudes de origen cruzado)
+* bcrypt (Para el hashing de contraseñas)
+* qrcode (Para generar códigos QR)
+* openpyxl (Para generar reportes en formato Excel `.xlsx`)
+* pywhatkit (Para enviar mensajes de WhatsApp - requiere configuración manual de WhatsApp Web)
+
+## Estructura del Proyecto
+
+
+gym_management_system/
+├── backend/
+│   ├── instance/
+│   │   └── gym.db              # Archivo de la base de datos SQLite
+│   ├── static/
+│   │   └── uploads/
+│   │       ├── member_images/  # Fotos de perfil de miembros
+│   │       └── qrs/            # Códigos QR generados para miembros
+│   ├── app.py                  # Aplicación principal de Flask (API)
+│   ├── db_config.py            # Configuración de la BD y rutas
+│   ├── setup_db.py             # Script para inicializar la BD (crear tablas, datos de prueba)
+│   ├── schema.sql              # Definición del esquema de la BD
+│   └── requirements.txt        # Dependencias de Python
+│
+└── frontend/
+├── css/
+│   └── style.css           # Estilos CSS globales
+├── js/
+│   ├── api.js              # Funciones para la API del backend
+│   └── utils.js            # Funciones de utilidad (ej. notificaciones)
+└── html/                   # Páginas HTML
+├── index.html
+├── login_gerente.html
+├── registro_miembro.html
+├── captura_imagenes_miembro.html
+├── registro_gerente.html
+├── gestionar_miembros.html
+├── gestionar_gerentes.html
+├── control_acceso.html
+└── reporte_acceso.html
+
+
+## Configuración y Ejecución
+
+### Prerrequisitos
+* Python 3.x
+* pip (Administrador de paquetes de Python)
+* Un navegador web moderno
+* (Opcional, para envío de QR por WhatsApp) Una sesión de WhatsApp Web activa en el navegador del servidor.
+
+### Backend
+1.  **Clonar el repositorio (si aplica) o tener los archivos del proyecto.**
+2.  **Navegar a la carpeta `backend`:**
+    ```bash
+    cd ruta/a/gym_management_system/backend
+    ```
+3.  **Crear y activar un entorno virtual (recomendado):**
+    ```bash
+    python -m venv venv
+    # En Windows
+    venv\Scripts\activate
+    # En macOS/Linux
+    source venv/bin/activate
+    ```
+4.  **Instalar dependencias:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+5.  **Inicializar la base de datos:**
+    Este comando creará el archivo `instance/gym.db` con las tablas necesarias y algunos datos de prueba. Si el archivo ya existe y deseas recrearlo, bórralo primero.
+    ```bash
+    python setup_db.py
+    ```
+6.  **Ejecutar el servidor Flask:**
+    ```bash
+    python app.py
+    ```
+    El backend estará corriendo en `http://127.0.0.1:5000`.
+
+    *Nota sobre `pywhatkit` y `openpyxl`*: Estas bibliotecas pueden causar reinicios del servidor de desarrollo de Flask debido a su interacción con el sistema de archivos o el navegador. Si experimentas reinicios constantes al probar funcionalidades que las usan, puedes ejecutar el servidor con el reloader desactivado (solo para desarrollo):
+    `python app.py` (y modificar la línea `app.run` en `app.py` a `app.run(debug=True, use_reloader=False, port=5000)`)
+
+### Frontend
+1.  Abre los archivos HTML directamente desde la carpeta `frontend/html/` en tu navegador web.
+    * Por ejemplo, abre `frontend/html/index.html` para comenzar.
+2.  El frontend se comunicará con el backend en `http://localhost:5000`. Asegúrate de que el servidor backend esté corriendo.
+
+## Funcionalidades Principales
+
+* **Gestión de Gerentes:**
+    * Registro de nuevos gerentes.
+    * Inicio de sesión para gerentes.
+    * Listado, edición y eliminación de gerentes.
+* **Gestión de Miembros:**
+    * Registro de nuevos miembros (requiere validación de gerente).
+    * Asignación de contraseña a miembros.
+    * Listado, edición (incluyendo contraseña y membresía) y eliminación de miembros.
+    * Generación de códigos QR (con ID de miembro) y guardado en el servidor.
+    * Envío de códigos QR guardados a miembros por WhatsApp (requiere `pywhatkit` y sesión activa).
+* **Control de Acceso:**
+    * Registro de ingresos y salidas de miembros.
+    * Validación por ID de miembro y contraseña.
+    * Opción para registrar acceso mediante captura de imagen (la imagen se guarda y se asocia al acceso).
+    * Lógica para prevenir registros de acceso inconsistentes (ej. doble ingreso sin salida).
+* **Captura de Imágenes:**
+    * Funcionalidad para capturar imágenes desde la cámara web para asociarlas a miembros o registros de acceso.
+* **Reportes:**
+    * Visualización de un reporte de todos los accesos.
+    * Descarga del reporte de acceso en formato Excel (`.xlsx`), filtrado por un rango de fechas y con validación de credenciales de gerente.
+* **Interfaz de Usuario:**
+    * Diseño responsivo utilizando Tailwind CSS.
+    * Notificaciones dinámicas para feedback al usuario.
+    * Manejo de sesión simple para gerentes usando `localStorage`.
+
+## Consideraciones de Seguridad
+* Las contraseñas de gerentes y miembros se almacenan hasheadas usando `bcrypt`.
+* **Envío de QR:** Actualmente, los códigos QR generados contienen solo el `miembro_id`. Si se modificara para incluir información sensible como contraseñas (incluso hasheadas), esto representaría un riesgo de seguridad.
+* **`pywhatkit`**: Requiere que el servidor tenga una sesión de WhatsApp Web activa, lo cual puede no ser ideal o seguro para todos los entornos de producción.
+
+## Próximos Pasos / Mejoras Posibles
+* Implementar un escáner de códigos QR en el frontend para el control de acceso.
+* Mejorar la seguridad de la sesión de gerente utilizando tokens (ej. JWT) en lugar de solo `localStorage`.
+* Proteger los endpoints del backend que requieren autenticación de gerente.
+* Añadir más validaciones y manejo de errores robusto.
+* Implementar la funcionalidad completa de "reconocimiento facial" si es un requisito.
+* Optimizar el uso de Tailwind CSS para producción (ej. usando el CLI de Tailwind o como plugin de PostCSS).
+* Desplegar la aplicación en un servidor de producción con un servidor WSGI (ej. Gunicorn, Waitress).
+

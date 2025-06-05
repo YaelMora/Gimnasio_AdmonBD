@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura de Imágenes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-button-page { @apply bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full sm:w-auto; }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 sm:p-10 rounded-xl shadow-2xl w-full max-w-2xl text-center">
+        <div class="flex justify-start mb-6 w-full">
+             <a href="#" id="backLink" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                Volver
+            </a>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Captura de Imágenes</h1>
+        <p class="text-gray-600 mb-6 text-lg">Para: <strong id="nombreMiembroElement" class="text-blue-600"></strong> (ID: <strong id="idMiembroElement" class="text-blue-600"></strong>)</p>
+
+        <div class="bg-gray-200 w-full h-72 sm:h-96 rounded-lg flex items-center justify-center mb-6 shadow-inner">
+            <video id="cameraFeed" class="w-full h-full object-cover rounded-lg hidden" autoplay playsinline></video>
+            <img id="placeholderImage" src="https://placehold.co/600x400/e2e8f0/9ca3af?text=Cámara+Desactivada" alt="Vista de cámara" class="w-full h-full object-cover rounded-lg">
+            <canvas id="photoCanvas" class="hidden"></canvas>
+        </div>
+        
+        <div id="capturedImagesContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6"></div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <button id="startCameraButton" class="main-button-page">Iniciar Cámara</button>
+            <button id="captureButton" class="main-button-page hidden">Capturar Imagen</button>
+            <button id="finishCaptureButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full sm:w-auto">Finalizar y Volver</button>
+        </div>
+         <p id="imageCounter" class="text-sm text-gray-500 mt-4">Imágenes capturadas: 0</p>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        const nombreMiembroSpan = document.getElementById('nombreMiembroElement');
+        const idMiembroSpan = document.getElementById('idMiembroElement');
+        const cameraFeed = document.getElementById('cameraFeed');
+        const photoCanvas = document.getElementById('photoCanvas');
+        const capturedImagesContainer = document.getElementById('capturedImagesContainer');
+        const startCameraButton = document.getElementById('startCameraButton');
+        const captureButton = document.getElementById('captureButton');
+        const finishCaptureButton = document.getElementById('finishCaptureButton');
+        const placeholderImage = document.getElementById('placeholderImage');
+        const imageCounterElement = document.getElementById('imageCounter');
+        const backLink = document.getElementById('backLink');
+
+        let stream = null;
+        let capturedImageCount = 0;
+        let miembroId = null;
+        let originPage = 'index.html'; // Página por defecto a la que volver
+        let tipoAccesoGlobal = null; // Para almacenar el tipo de acceso si viene de control_acceso
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nombreFromURL = urlParams.get('nombre');
+            miembroId = urlParams.get('miembroId'); // Obtener el ID del miembro
+            const originFromURL = urlParams.get('origin');
+            tipoAccesoGlobal = urlParams.get('tipo'); // 'ingreso' o 'salida'
+
+            if (nombreFromURL) nombreMiembroSpan.textContent = nombreFromURL;
+            if (miembroId) idMiembroSpan.textContent = miembroId;
+            else {
+                idMiembroSpan.textContent = "NO PROPORCIONADO";
+                showNotification("Advertencia: ID de miembro no disponible. La subida de imágenes podría no asociarse correctamente.", "error", 7000);
+                // Considerar deshabilitar 'captureButton' si miembroId es crucial y no está
+                // captureButton.disabled = true; 
+            }
+
+            if (originFromURL === 'control_acceso') {
+                originPage = 'control_acceso.html';
+                if(backLink) backLink.href = originPage;
+                // Si es para control de acceso, podríamos querer solo 1 foto
+                // y el botón "Finalizar" podría tener otra lógica o texto.
+                finishCaptureButton.textContent = 'Finalizar Acceso';
+            } else if (originFromURL === 'registro_miembro') {
+                originPage = 'gestionar_miembros.html'; // Después de registrar, ir a gestionar
+                if(backLink) backLink.href = 'registro_miembro.html';
+            } else {
+                 if(backLink) backLink.href = originPage;
+            }
+        });
+
+        async function startCameraHandler() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                cameraFeed.srcObject = stream;
+                cameraFeed.classList.remove('hidden');
+                placeholderImage.classList.add('hidden');
+                startCameraButton.classList.add('hidden');
+                captureButton.classList.remove('hidden');
+                 showNotification("Cámara iniciada.", "info", 1500);
+            } catch (error) {
+                showNotification("No se pudo acceder a la cámara. Verifique permisos y conexión.", "error", 5000);
+            }
+        }
+
+        function dataURLtoBlob(dataurl) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+            return new Blob([u8arr], {type:mime});
+        }
+
+        async function captureImageHandler() {
+            if (!stream) { showNotification("La cámara no está activa.", "error"); return; }
+            if (!miembroId) { 
+                showNotification("ID de miembro no disponible. No se puede subir imagen.", "error", 4000);
+                // Podríamos decidir no permitir la captura si no hay ID.
+                // O permitirla y que el usuario la asocie luego (más complejo).
+                return;
+            }
+
+            photoCanvas.width = cameraFeed.videoWidth;
+            photoCanvas.height = cameraFeed.videoHeight;
+            const context = photoCanvas.getContext('2d');
+            context.drawImage(cameraFeed, 0, 0, photoCanvas.width, photoCanvas.height);
+            const imageDataURL = photoCanvas.toDataURL('image/jpeg');
+            const imageBlob = dataURLtoBlob(imageDataURL);
+
+            const imgElement = document.createElement('img');
+            imgElement.src = imageDataURL;
+            imgElement.className = 'w-full h-auto object-cover rounded-md shadow-md';
+            capturedImagesContainer.appendChild(imgElement); // Mostrar miniatura
+            
+            capturedImageCount++;
+            imageCounterElement.textContent = `Imágenes capturadas: ${capturedImageCount}`;
+            captureButton.disabled = true; // Deshabilitar mientras se sube
+
+            try {
+                showNotification(`Subiendo imagen ${capturedImageCount}...`, 'info', 3000);
+                const response = await subirImagenMiembro(miembroId, imageBlob); // api.js
+                showNotification(`Imagen ${capturedImageCount} subida: ${response.filename || 'OK'}.`, 'success');
+                
+                // Si la captura es para un evento de acceso (ingreso/salida)
+                if (originPage === 'control_acceso.html' && tipoAccesoGlobal && response.imagenId) {
+                    showNotification(`Registrando ${tipoAccesoGlobal}...`, 'info', 2000);
+                    await registrarAcceso({
+                        miembroId: miembroId,
+                        tipoAcceso: tipoAccesoGlobal,
+                        metodoVerificacion: 'captura_manual', // o 'reconocimiento_facial' si se implementa
+                        imagenIdAcceso: response.imagenId,
+                        nombreMiembroDetectado: nombreMiembroSpan.textContent // El nombre que ya tenemos
+                    });
+                    showNotification(`Acceso (${tipoAccesoGlobal}) registrado para ${nombreMiembroSpan.textContent}.`, 'success', 3000);
+                    // Para acceso, usualmente una foto es suficiente, podríamos finalizar aquí.
+                    finishCaptureHandler(true); // true para indicar que es por acceso y redirigir
+                }
+
+            } catch (error) {
+                showNotification(`Error al subir imagen ${capturedImageCount}: ${error.message}`, 'error', 5000);
+                // Considerar remover la miniatura si falla la subida
+                if (imgElement.parentNode) imgElement.parentNode.removeChild(imgElement);
+                capturedImageCount--;
+                imageCounterElement.textContent = `Imágenes capturadas: ${capturedImageCount}`;
+            } finally {
+                 captureButton.disabled = false; // Rehabilitar botón
+            }
+        }
+
+        function finishCaptureHandler(isAccessRelated = false) {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            cameraFeed.classList.add('hidden');
+            placeholderImage.classList.remove('hidden');
+            startCameraButton.classList.remove('hidden');
+            captureButton.classList.add('hidden');
+
+            if (!isAccessRelated) {
+                showNotification(`Captura de imágenes finalizada.`, 'info', 2000);
+            }
+            
+            setTimeout(() => {
+                window.location.href = originPage;
+            }, isAccessRelated ? 1500 : 2500);
+        }
+
+        startCameraButton.addEventListener('click', startCameraHandler);
+        captureButton.addEventListener('click', captureImageHandler);
+        finishCaptureButton.addEventListener('click', () => finishCaptureHandler(originPage === 'control_acceso.html'));
+
+        window.addEventListener('beforeunload', () => {
+            if (stream) { stream.getTracks().forEach(track => track.stop()); }
+        });
+    </script>
+</body>
+</html>

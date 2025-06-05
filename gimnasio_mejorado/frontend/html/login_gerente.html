@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Gerente de Gimnasio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 sm:p-10 rounded-xl shadow-2xl w-full max-w-md">
+        <div class="text-center mb-8">
+            <img src="https://placehold.co/100x100/3b82f6/ffffff?text=GymLogo" alt="Logo Gimnasio" class="mx-auto rounded-full mb-4">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Inicio de Sesión de Gerente</h1>
+        </div>
+        <form id="loginGerenteForm" class="space-y-6">
+            <div>
+                <label for="loginIdGerente" class="block text-sm font-medium text-gray-700 mb-1">ID o Correo del Gerente</label>
+                <input type="text" id="loginIdGerente" name="idGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required autocomplete="username">
+            </div>
+            <div>
+                <label for="loginContrasenaGerente" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <input type="password" id="loginContrasenaGerente" name="contrasena" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required autocomplete="current-password">
+            </div>
+            <button type="submit" id="btnLogin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out text-lg">
+                Iniciar Sesión
+            </button>
+        </form>
+        <div class="mt-6 text-center">
+            <a href="index.html" class="text-sm text-blue-600 hover:text-blue-800">Volver a la página principal</a>
+        </div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        const loginGerenteForm = document.getElementById('loginGerenteForm');
+        const btnLogin = document.getElementById('btnLogin');
+
+        // Redirigir si ya hay una sesión activa
+        if (localStorage.getItem('gerenteSession')) {
+            window.location.href = 'index.html';
+        }
+
+        loginGerenteForm?.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const idGerente = document.getElementById('loginIdGerente').value.trim();
+            const contrasena = document.getElementById('loginContrasenaGerente').value;
+
+            if (!idGerente || !contrasena) {
+                showNotification('Por favor, ingrese ID/Correo y contraseña.', 'error');
+                return;
+            }
+
+            if (btnLogin) {
+                btnLogin.disabled = true;
+                btnLogin.textContent = 'Iniciando...';
+            }
+
+            try {
+                showNotification('Validando credenciales...', 'info', 2000);
+                // La función validarGerente ahora debería devolver más datos del gerente
+                const gerenteInfo = await validarGerente(idGerente, contrasena); 
+
+                if (gerenteInfo && gerenteInfo.idGerente) { // Asumiendo que el backend devuelve idGerente y otros datos
+                    // Guardar información de sesión. Podrías guardar el objeto entero o solo lo necesario.
+                    // Por seguridad, no guardes la contraseña aquí.
+                    // El backend debería devolver nombre, correo, etc., pero no la contraseña.
+                    localStorage.setItem('gerenteSession', JSON.stringify({
+                        id: gerenteInfo.idGerente,
+                        nombre: gerenteInfo.nombre, // Asumiendo que el backend devuelve 'nombre'
+                        correo: gerenteInfo.correo // Asumiendo que el backend devuelve 'correo'
+                    }));
+                    showNotification(`Bienvenido, ${gerenteInfo.nombre || 'Gerente'}! Redirigiendo...`, 'success', 2500);
+                    setTimeout(() => {
+                        window.location.href = 'index.html'; // Redirigir a la página principal (administración)
+                    }, 2500);
+                } else {
+                    // Esto no debería ocurrir si validarGerente lanza error en caso de fallo
+                    showNotification('Respuesta inesperada del servidor.', 'error');
+                }
+            } catch (error) {
+                showNotification(`Error al iniciar sesión: ${error.message}`, 'error', 4000);
+            } finally {
+                if (btnLogin) {
+                    btnLogin.disabled = false;
+                    btnLogin.textContent = 'Iniciar Sesión';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

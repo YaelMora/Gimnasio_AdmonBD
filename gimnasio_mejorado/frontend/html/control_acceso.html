@@ -8,125 +8,87 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .action-button-acceso { @apply text-white font-bold py-4 px-6 rounded-xl shadow-lg transition duration-150 ease-in-out w-full text-xl focus:outline-none focus:ring-2 focus:ring-offset-2; }
-        .ingreso-button { @apply bg-green-500 hover:bg-green-600 focus:ring-green-400 action-button-acceso; }
-        .salida-button { @apply bg-red-500 hover:bg-red-600 focus:ring-red-400 action-button-acceso; }
-        .image-capture-button { @apply bg-blue-500 hover:bg-blue-600 focus:ring-blue-400 action-button-acceso mt-4 text-base py-3; }
+        .camera-container {
+            @apply w-full max-w-sm mx-auto bg-gray-200 rounded-lg shadow-inner my-4;
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 sm:p-12 rounded-xl shadow-2xl w-full max-w-md">
-        <div class="flex justify-start mb-8">
-            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                Volver
-            </a>
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-6">Control de Acceso</h1>
-        
-        <form id="accesoForm" class="space-y-4">
-            <div>
-                <label for="accesoMiembroId" class="block text-sm font-medium text-gray-700 mb-1">ID del Miembro</label>
-                <input type="text" id="accesoMiembroId" name="miembroId" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" placeholder="Ingresar ID del miembro" required>
-            </div>
-            <div>
-                <label for="accesoContrasena" class="block text-sm font-medium text-gray-700 mb-1">Contraseña del Miembro</label>
-                <input type="password" id="accesoContrasena" name="contrasena" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" placeholder="Ingresar contraseña">
-            </div>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">Control de Acceso Facial</h1>
 
-            <div class="space-y-3 pt-2">
-                <button type="button" id="btnIngresoDirecto" class="ingreso-button">Ingreso (ID/Contraseña)</button>
-                <button type="button" id="btnSalidaDirecta" class="salida-button">Salida (ID/Contraseña)</button>
-            </div>
-        </form>
+        <div class="camera-container">
+            <video id="cameraFeedAcceso" playsinline autoplay muted class="w-full h-auto rounded-lg object-cover"></video>
+            <canvas id="photoCanvasAcceso" class="hidden"></canvas>
+        </div>
         
-        <div class="mt-6 text-center">
-            <p class="text-sm text-gray-500 mb-2">O, si es necesario:</p>
-            <button id="btnIngresoImagen" class="image-capture-button w-full">Ingreso con Captura de Imagen</button>
-            <!-- El botón de salida con imagen es menos común, pero se puede añadir si es necesario -->
-            <!-- <button id="btnSalidaImagen" class="image-capture-button w-full bg-orange-500 hover:bg-orange-600 mt-2">Salida con Captura de Imagen</button> -->
+        <div class="space-y-3">
+            <button id="btnIniciarCamaraFacial" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md">Iniciar Cámara</button>
+            <button id="btnVerificarAcceso" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md hidden">Verificar Acceso</button>
+        </div>
+
+        <div class="mt-8 text-center border-t pt-4">
+            <a href="index.html" class="text-sm text-blue-600 hover:text-blue-800">Volver al Menú Principal</a>
         </div>
     </div>
 
     <script src="../js/utils.js"></script>
     <script src="../js/api.js"></script>
     <script>
-        const accesoForm = document.getElementById('accesoForm');
-        const accesoMiembroIdInput = document.getElementById('accesoMiembroId');
-        const accesoContrasenaInput = document.getElementById('accesoContrasena');
-        const btnIngresoDirecto = document.getElementById('btnIngresoDirecto');
-        const btnSalidaDirecta = document.getElementById('btnSalidaDirecta');
-        const btnIngresoImagen = document.getElementById('btnIngresoImagen');
-        // const btnSalidaImagen = document.getElementById('btnSalidaImagen');
-
-        async function handleAccesoDirecto(tipoAcceso) {
-            const miembroId = accesoMiembroIdInput.value.trim();
-            const contrasena = accesoContrasenaInput.value;
-
-            if (!miembroId) {
-                showNotification("Por favor, ingrese el ID del miembro.", "error");
-                accesoMiembroIdInput.focus();
-                return;
-            }
-            if (!contrasena) {
-                showNotification("Por favor, ingrese la contraseña del miembro.", "error");
-                accesoContrasenaInput.focus();
-                return;
-            }
-            
-            const originalButtonText = tipoAcceso === 'ingreso' ? btnIngresoDirecto.textContent : btnSalidaDirecta.textContent;
-            const buttonToUpdate = tipoAcceso === 'ingreso' ? btnIngresoDirecto : btnSalidaDirecta;
-            buttonToUpdate.disabled = true;
-            buttonToUpdate.textContent = 'Procesando...';
-
-            try {
-                showNotification(`Validando acceso para ID ${miembroId}...`, 'info', 2000);
-                // Validar ID y contraseña, y estado de membresía (el backend lo hace)
-                const validacionResponse = await validarAccesoMiembro(miembroId, contrasena);
-
-                if (validacionResponse.accesoPermitido) {
-                    showNotification(`Acceso validado para ${validacionResponse.nombreCompleto}. Registrando ${tipoAcceso}...`, 'success', 2000);
-                    
-                    const accesoData = {
-                        miembroId: validacionResponse.miembroId,
-                        tipoAcceso: tipoAcceso,
-                        metodoVerificacion: 'id_password',
-                        nombreMiembroDetectado: validacionResponse.nombreCompleto
-                    };
-                    const registroResponse = await registrarAcceso(accesoData);
-                    showNotification(registroResponse.message || `${tipoAcceso.charAt(0).toUpperCase() + tipoAcceso.slice(1)} registrado exitosamente.`, 'success', 3000);
-                    accesoForm.reset(); // Limpiar formulario
-                } else {
-                    // El backend ya debería haber enviado un mensaje de error específico
-                    showNotification(validacionResponse.message || "Acceso denegado.", 'error', 4000);
+        const btnIniciarCamaraFacial = document.getElementById('btnIniciarCamaraFacial');
+        const cameraFeedAcceso = document.getElementById('cameraFeedAcceso');
+        const photoCanvasAcceso = document.getElementById('photoCanvasAcceso');
+        const btnVerificarAcceso = document.getElementById('btnVerificarAcceso');
+        let stream = null;
+        
+        btnIniciarCamaraFacial.addEventListener('click', async () => {
+             if (stream && stream.active) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                cameraFeedAcceso.srcObject = null;
+                btnIniciarCamaraFacial.textContent = 'Iniciar Cámara';
+                btnVerificarAcceso.classList.add('hidden');
+                showToast('Cámara detenida.');
+            } else {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    cameraFeedAcceso.srcObject = stream;
+                    btnIniciarCamaraFacial.textContent = 'Detener Cámara';
+                    btnVerificarAcceso.classList.remove('hidden');
+                    showToast('Cámara iniciada. Centre su rostro y verifique.', 'info');
+                } catch (error) {
+                    showToast('No se pudo acceder a la cámara.', 'error');
                 }
-            } catch (error) {
-                showNotification(`Error en el proceso de acceso: ${error.message}`, 'error', 5000);
-            } finally {
-                buttonToUpdate.disabled = false;
-                buttonToUpdate.textContent = originalButtonText;
             }
-        }
+        });
 
-        function handleAccesoImagen(tipoAcceso) {
-            const miembroId = accesoMiembroIdInput.value.trim();
-            if (!miembroId) {
-                showNotification("Por favor, ingrese el ID del miembro para asociar la imagen.", "warning", 3000);
-                 // Permitir continuar sin ID si el flujo lo permite, pero es mejor tenerlo.
+        btnVerificarAcceso.addEventListener('click', async () => {
+            if (!stream || !stream.active) {
+                showToast('La cámara no está activa.', 'error');
+                return;
             }
-            let nombreParaCaptura = miembroId ? `Miembro ID ${miembroId}` : "Miembro (Captura General)";
-            
-            showNotification(`Procediendo a captura de imagen para ${tipoAcceso}.`, 'info', 2000);
-            setTimeout(() => {
-                window.location.href = `captura_imagenes_miembro.html?miembroId=${encodeURIComponent(miembroId)}&nombre=${encodeURIComponent(nombreParaCaptura)}&origin=control_acceso&tipo=${tipoAcceso}`;
-            }, 2000);
-        }
-
-        btnIngresoDirecto?.addEventListener('click', () => handleAccesoDirecto('ingreso'));
-        btnSalidaDirecta?.addEventListener('click', () => handleAccesoDirecto('salida'));
-        btnIngresoImagen?.addEventListener('click', () => handleAccesoImagen('ingreso'));
-        // btnSalidaImagen?.addEventListener('click', () => handleAccesoImagen('salida'));
-
+            const canvas = photoCanvasAcceso;
+            canvas.width = cameraFeedAcceso.videoWidth;
+            canvas.height = cameraFeedAcceso.videoHeight;
+            canvas.getContext('2d').drawImage(cameraFeedAcceso, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(async (blob) => {
+                btnVerificarAcceso.disabled = true;
+                btnVerificarAcceso.textContent = 'Verificando...';
+                try {
+                    const response = await verificarRostroAcceso(blob);
+                    if (response.accesoPermitido) {
+                        showToast(`Acceso ${response.tipoAccesoRegistrado} concedido a: ${response.nombreMiembro}`, 'success');
+                    } else {
+                        showToast(response.message || 'Acceso denegado.', 'error');
+                    }
+                } catch (error) {
+                    showToast(`Error: ${error.message}`, 'error');
+                } finally {
+                    btnVerificarAcceso.disabled = false;
+                    btnVerificarAcceso.textContent = 'Verificar Acceso';
+                }
+            }, 'image/jpeg');
+        });
     </script>
 </body>
 </html>

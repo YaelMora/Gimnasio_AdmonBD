@@ -79,7 +79,7 @@ gym_management_system/
     ```
 4.  **Instalar dependencias:**
     ```bash
-    pip install -r requirements.txt
+    pip install -r backend/requirements.txt
     ```
 5.  **Inicializar la base de datos:**
     Este comando creará el archivo `instance/gym.db` con las tablas necesarias y algunos datos de prueba. Si el archivo ya existe y deseas recrearlo, bórralo primero.

@@ -3,173 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Nuevo Miembro</title>
+    <title>Administración de Miembros</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* La directiva @apply no funciona con el CDN de Tailwind, por lo que se ha eliminado este bloque. */
+        /* Los estilos se aplicarán directamente en el HTML/JS. */
+        #qrImageModal img { max-width: 80%; max-height: 80vh; margin: auto; }
+    </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 sm:p-10 rounded-xl shadow-2xl w-full max-w-lg">
-        <div class="flex justify-start mb-6">
-            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                Volver
+<body class="bg-gray-100 min-h-screen p-4 sm:p-6">
+    <header class="mb-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm sm:text-base">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                Inicio
+            </a>
+            <h1 class="text-xl sm:text-3xl font-bold text-gray-800 text-center flex-grow">Administración de Miembros</h1>
+            <a href="registro_miembro.html" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg shadow-md text-xs sm:text-sm whitespace-nowrap">
+                + Registrar Nuevo
             </a>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8">Registro de Nuevo Miembro</h1>
-        <form id="registroMiembroForm" class="space-y-6">
-            <div>
-                <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
-            </div>
-            <div>
-                <label for="apellido" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                <input type="text" id="apellido" name="apellido" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
-            </div>
-            <div>
-                <label for="telefono" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                <input type="tel" id="telefono" name="telefono" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
-            </div>
-            <div>
-                <label for="correo" class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
-                <input type="email" id="correo" name="correo" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
-            </div>
-            <div>
-                <label for="contrasenaMiembro" class="block text-sm font-medium text-gray-700 mb-1">Contraseña para Miembro</label>
-                <input type="password" id="contrasenaMiembro" name="contrasena" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required minlength="6">
-            </div>
-            <div>
-                <label for="confirmarContrasenaMiembro" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña Miembro</label>
-                <input type="password" id="confirmarContrasenaMiembro" name="confirmarContrasenaMiembro" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required minlength="6">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Membresía</label>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <button type="button" data-duration="1 Mes" class="membership-button border border-gray-300 hover:border-blue-500 text-gray-700 py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">1 Mes</button>
-                    <button type="button" data-duration="3 Meses" class="membership-button border border-gray-300 hover:border-blue-500 text-gray-700 py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">3 Meses</button>
-                    <button type="button" data-duration="6 Meses" class="membership-button border border-gray-300 hover:border-blue-500 text-gray-700 py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">6 Meses</button>
-                </div>
-                <input type="hidden" id="membresiaSeleccionada" name="membresia" required>
-            </div>
-            <button type="button" id="btnAbrirModalGerente" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Siguiente: Validar Gerente</button>
-        </form>
-    </div>
+        <div class="max-w-7xl mx-auto mt-4 text-center">
+             <button id="btnEntrenarModelo" class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out text-sm">
+                Entrenar Modelo Facial
+            </button>
+        </div>
+    </header>
 
-    <div id="validateManagerModal" class="modal hidden modal-global">
+    <main class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-2xl">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Id</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Nombre</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Teléfono</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Correo</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Estado</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-1/3">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaMiembrosBody" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+        <p id="noDataMessage" class="text-center text-gray-500 py-8 hidden">No hay miembros registrados.</p>
+    </main>
+
+    <!-- Modal Editar Miembro -->
+    <div id="editMemberModal" class="modal hidden modal-global">
         <div class="modal-content-global">
-            <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">Validar Gerente para Registrar Miembro</h2>
-            <form id="validateManagerForm" class="space-y-4">
-                <div>
-                    <label for="idGerente" class="block text-sm font-medium text-gray-700 mb-1">ID o Correo del Gerente</label>
-                    <input type="text" id="idGerente" name="idGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
-                </div>
-                <div>
-                    <label for="contrasenaGerente" class="block text-sm font-medium text-gray-700 mb-1">Contraseña del Gerente</label>
-                    <input type="password" id="contrasenaGerente" name="contrasenaGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                    <button type="button" id="btnCancelValidateManager" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-150 ease-in-out w-full">Cancelar</button>
-                    <button type="submit" id="btnConfirmValidateManager" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full">Confirmar y Registrar Miembro</button>
-                </div>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center">Cambios de Datos Miembro</h2>
+            <form id="editMemberForm" class="space-y-5">
+                <input type="hidden" id="editMemberId" name="memberId">
+                <div><label for="editNombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label><input type="text" id="editNombre" name="nombre" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></div>
+                <div><label for="editApellido" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label><input type="text" id="editApellido" name="apellido" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></div>
+                <div><label for="editTelefono" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label><input type="tel" id="editTelefono" name="telefono" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div>
+                <div><label for="editCorreo" class="block text-sm font-medium text-gray-700 mb-1">Correo</label><input type="email" id="editCorreo" name="correo" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div>
+                <div><label for="editContrasenaMiembro" class="block text-sm font-medium text-gray-700 mb-1">Nueva Contraseña (dejar en blanco para no cambiar)</label><input type="password" id="editContrasenaMiembro" name="contrasena" class="w-full px-4 py-2 border border-gray-300 rounded-lg" minlength="6"></div>
+                 <div><label for="editFechaVencimiento" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Vencimiento</label><input type="date" id="editFechaVencimiento" name="fechaVencimiento" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Renovar/Cambiar Membresía</label><select id="editDuracionMembresia" name="duracionMembresia" class="w-full px-4 py-2 border border-gray-300 rounded-lg"><option value="">No cambiar/No renovar</option><option value="1 Mes">1 Mes</option><option value="3 Meses">3 Meses</option><option value="6 Meses">6 Meses</option></select></div>
+                <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="button" onclick="closeModal('editMemberModal'); resetForm('editMemberForm');" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg w-full">Cancelar</button><button type="submit" id="btnUpdateMember" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg w-full">Actualizar</button></div>
             </form>
         </div>
     </div>
 
+    <!-- Modal Confirmar Eliminación -->
+    <div id="deleteConfirmModal" class="modal hidden modal-global">
+        <div class="modal-content-global max-w-sm">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Confirmar Eliminación</h2>
+            <p class="text-gray-600 mb-6 text-center">¿Está seguro de que desea eliminar este registro?</p>
+            <input type="hidden" id="deleteMemberId">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button type="button" onclick="closeModal('deleteConfirmModal')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-150 ease-in-out w-full">Cancelar</button>
+                <button type="button" id="confirmDeleteButton" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full">Aceptar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para mostrar el QR generado -->
+    <div id="qrImageModal" class="modal hidden modal-global items-center justify-center">
+        <div class="modal-content-global p-4 text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Código QR Generado</h3>
+            <img id="generatedQrImage" src="#" alt="Código QR del Miembro" class="mb-4 block mx-auto">
+            <p id="qrImagePath" class="text-xs text-gray-500 mb-4"></p>
+            <button onclick="closeModal('qrImageModal')" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Enlace al archivo JavaScript externo -->
     <script src="../js/utils.js"></script>
     <script src="../js/api.js"></script>
-    <script>
-        let selectedMembershipButton = null;
-        const membresiaSeleccionadaInput = document.getElementById('membresiaSeleccionada');
-        const registroMiembroForm = document.getElementById('registroMiembroForm');
-        const validateManagerForm = document.getElementById('validateManagerForm');
-        const btnAbrirModalGerente = document.getElementById('btnAbrirModalGerente');
-        const btnConfirmValidateManager = document.getElementById('btnConfirmValidateManager');
-
-
-        document.querySelectorAll('.membership-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const duration = this.dataset.duration;
-                if (selectedMembershipButton) {
-                    selectedMembershipButton.classList.remove('bg-blue-500', 'text-white', 'border-blue-500');
-                    selectedMembershipButton.classList.add('border-gray-300', 'text-gray-700');
-                }
-                this.classList.add('bg-blue-500', 'text-white', 'border-blue-500');
-                this.classList.remove('border-gray-300', 'text-gray-700');
-                if(membresiaSeleccionadaInput) membresiaSeleccionadaInput.value = duration;
-                selectedMembershipButton = this;
-            });
-        });
-
-        btnAbrirModalGerente?.addEventListener('click', () => {
-            const contrasenaMiembro = document.getElementById('contrasenaMiembro').value;
-            const confirmarContrasenaMiembro = document.getElementById('confirmarContrasenaMiembro').value;
-
-            if (!registroMiembroForm.checkValidity()) {
-                registroMiembroForm.reportValidity();
-                return;
-            }
-            if (contrasenaMiembro !== confirmarContrasenaMiembro) {
-                showNotification('Las contraseñas del miembro no coinciden.', 'error');
-                return;
-            }
-             if (contrasenaMiembro.length < 6) {
-                showNotification('La contraseña del miembro debe tener al menos 6 caracteres.', 'error');
-                return;
-            }
-            if (!membresiaSeleccionadaInput?.value) {
-                showNotification('Por favor, seleccione un tipo de membresía.', 'error');
-                return;
-            }
-            openModal('validateManagerModal');
-        });
-        
-        document.getElementById('btnCancelValidateManager')?.addEventListener('click', () => {
-            closeModal('validateManagerModal');
-            if(validateManagerForm) validateManagerForm.reset();
-        });
-
-        validateManagerForm?.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const idGerente = document.getElementById('idGerente').value;
-            const contrasenaGerente = document.getElementById('contrasenaGerente').value;
-            const miembroData = getFormData('registroMiembroForm'); 
-            delete miembroData.confirmarContrasenaMiembro; // No enviar al backend
-
-            if (btnConfirmValidateManager) {
-                btnConfirmValidateManager.disabled = true;
-                btnConfirmValidateManager.textContent = 'Procesando...';
-            }
-
-            try {
-                showNotification('Validando gerente...', 'info', 2000);
-                await validarGerente(idGerente, contrasenaGerente);
-                showNotification('Gerente validado.', 'success', 1500);
-                
-                showNotification('Registrando miembro...', 'info', 2000);
-                const dataParaRegistrar = { 
-                    ...miembroData, 
-                    gerenteId: idGerente, 
-                    contrasenaGerente: contrasenaGerente 
-                };
-                const nuevoMiembro = await registrarMiembro(dataParaRegistrar);
-                
-                showNotification(`Miembro ${nuevoMiembro.nombre || miembroData.nombre} (ID: ${nuevoMiembro.id}) registrado. Redirigiendo a captura de imágenes...`, 'success', 3000);
-                
-                setTimeout(() => {
-                    window.location.href = `captura_imagenes_miembro.html?miembroId=${nuevoMiembro.id}&nombre=${encodeURIComponent(nuevoMiembro.nombre || miembroData.nombre)}&origin=registro_miembro`;
-                }, 3000);
-
-            } catch (error) {
-                showNotification(`Error: ${error.message}`, 'error', 5000);
-            } finally {
-                closeModal('validateManagerModal');
-                if(validateManagerForm) validateManagerForm.reset();
-                 if (btnConfirmValidateManager) {
-                    btnConfirmValidateManager.disabled = false;
-                    btnConfirmValidateManager.textContent = 'Confirmar y Registrar Miembro';
-                }
-            }
-        });
-    </script>
+    <script src="../js/gestionar_miembros.js" defer></script>
 </body>
 </html>

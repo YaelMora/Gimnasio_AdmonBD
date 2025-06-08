@@ -5,17 +5,23 @@ async function request(endpoint, method = 'GET', data = null, headers = {}) {
     const config = {
         method: method,
         headers: {
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json', // No siempre será JSON para FormData
             ...headers,
         },
     };
 
-    if (data && (method === 'POST' || method === 'PUT')) {
+    // Ajustar Content-Type y body para FormData vs JSON
+    if (data instanceof FormData) {
+        config.body = data;
+        // No establecer Content-Type, el navegador lo hará con el boundary correcto para FormData
+    } else if (data && (method === 'POST' || method === 'PUT')) {
         config.body = JSON.stringify(data);
+        config.headers['Content-Type'] = 'application/json';
     }
 
+
     try {
-        console.log(`[API Request] ${method} ${API_BASE_URL}${endpoint}`, data || '');
+        console.log(`[API Request] ${method} ${API_BASE_URL}${endpoint}`, (data instanceof FormData ? 'FormData object' : data) || '');
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
         
         console.log(`[API Response Raw] Status: ${response.status}, OK: ${response.ok}`);
@@ -41,7 +47,7 @@ async function request(endpoint, method = 'GET', data = null, headers = {}) {
         console.log("[API Response] Not an attachment or header not detected as such. Processing as JSON.");
         const responseData = await response.json().catch((e) => {
             console.error("[API Response] Failed to parse JSON, returning null for responseData.", e);
-            return null; 
+            return { message: `Error al parsear JSON: ${e.message}. Respuesta no fue JSON válido.` }; // Devolver objeto de error
         });
 
         if (!response.ok) {
@@ -61,46 +67,54 @@ async function request(endpoint, method = 'GET', data = null, headers = {}) {
 
 // --- Miembros ---
 async function registrarMiembro(miembroDataConGerenteAuth) { return request('/miembros', 'POST', miembroDataConGerenteAuth); }
-async function obtenerMiembros() { return request('/miembros'); }
+async function obtenerMiembros() { return request('/miembros', 'GET'); } // Método explícito
 async function actualizarMiembro(id, miembroData) { return request(`/miembros/${id}`, 'PUT', miembroData); }
 async function eliminarMiembro(id) { return request(`/miembros/${id}`, 'DELETE'); }
 async function validarAccesoMiembro(miembroId, contrasena) { return request(`/miembros/${miembroId}/validar_acceso`, 'POST', { contrasena });}
+async function generarYGuardarQRMiembro(miembroId) { return request(`/miembros/${miembroId}/generar_qr`, 'POST');}
+async function enviarQRMiembroGuardado(miembroId) { return request(`/miembros/${miembroId}/enviar_qr`, 'POST');}
 
-async function generarYGuardarQRMiembro(miembroId) { // Nueva función
-    console.log(`[API Call] generarYGuardarQRMiembro para ID: ${miembroId}`);
-    return request(`/miembros/${miembroId}/generar_qr`, 'POST');
-}
-
-async function enviarQRMiembroGuardado(miembroId) { // Nombre modificado para claridad
-    console.log(`[API Call] enviarQRMiembroGuardado para ID: ${miembroId}`);
-    return request(`/miembros/${miembroId}/enviar_qr`, 'POST');
+async function enrolarRostroMiembro(miembroId, imageFile) {
+    console.log(`[API Call] enrolarRostroMiembro para ID: ${miembroId}`);
+    const formData = new FormData();
+    formData.append('image', imageFile, `enroll_${miembroId}_${Date.now()}.png`);
+    return request(`/miembros/${miembroId}/enrolar_rostro`, 'POST', formData);
 }
 
 async function subirImagenMiembro(miembroId, imageFile) { 
+    console.log(`[API Call] subirImagenMiembro (perfil) para ID: ${miembroId}`);
     const formData = new FormData();
-    formData.append('image', imageFile, imageFile.name || 'member_image.jpg'); 
+    formData.append('image', imageFile, imageFile.name || 'member_profile_image.jpg'); 
     formData.append('miembroId', miembroId);
-    try {
-        const response = await fetch(`${API_BASE_URL}/miembros/imagen`, { method: 'POST', body: formData });
-        const responseData = await response.json().catch(() => null);
-        if (!response.ok) {
-            const errorMessage = responseData?.message || `Error ${response.status} subiendo imagen`;
-            throw new Error(errorMessage);
-        }
-        return responseData;
-    } catch (error) { console.error('Error subiendo imagen:', error); throw error; }
+    return request(`/miembros/imagen`, 'POST', formData); 
 }
+
 
 // --- Gerentes ---
 async function validarGerente(idGerente, contrasena) { return request('/gerentes/validar', 'POST', { idGerente, contrasena }); }
 async function registrarGerente(gerenteData) { return request('/gerentes', 'POST', gerenteData); }
-async function obtenerGerentes() { return request('/gerentes'); }
+async function obtenerGerentes() { return request('/gerentes', 'GET'); } // Método explícito
 async function actualizarGerente(id, gerenteData) { return request(`/gerentes/${id}`, 'PUT', gerenteData); }
 async function eliminarGerente(id) { return request(`/gerentes/${id}`, 'DELETE'); }
 
-// --- Acceso ---
-async function registrarAcceso(accesoData) { return request('/acceso', 'POST', accesoData); }
-async function obtenerReporteAcceso() { return request('/acceso/reporte'); }
+// --- Acceso y Reconocimiento Facial ---
+async function registrarAcceso(accesoData) { return request('/acceso/registrar', 'POST', accesoData); }
+async function obtenerReporteAcceso() { return request('/acceso/reporte', 'GET'); }
+
+async function verificarRostroAcceso(imageFile) { 
+    console.log(`[API Call] verificarRostroAcceso`);
+    const formData = new FormData();
+    formData.append('image', imageFile, `access_check_${Date.now()}.png`);
+    return request('/acceso/verificar_rostro', 'POST', formData);
+}
+
+// **FUNCIÓN AÑADIDA**
+async function entrenarModeloFacial() {
+    console.log(`[API Call] entrenarModeloFacial`);
+    // Este endpoint no necesita enviar datos, solo la solicitud POST
+    return request('/entrenar_reconocimiento_facial', 'POST');
+}
+
 async function descargarReporteAccesoExcel(filtrosConAuth) {
     try {
         console.log("[Descarga Excel] Solicitando reporte con:", filtrosConAuth);

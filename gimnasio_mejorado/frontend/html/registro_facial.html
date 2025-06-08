@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Facial de Miembros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Asegúrate de que la ruta a tu style.css sea correcta -->
+    <link rel="stylesheet" href="../css/style.css"> 
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .video-container, .canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Max width for video and canvas */
+            margin: 0 auto;
+        }
+        video, canvas, #capturedPhoto {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #e5e7eb; /* bg-gray-200 */
+        }
+        #capturedPhotoContainer { /* Contenedor para la previsualización */
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            aspect-ratio: 4 / 3; /* O la proporción que tenga tu cámara */
+            background-color: #e5e7eb; /* bg-gray-200 */
+            border-radius: 0.5rem;
+        }
+        #capturedPhoto {
+           /* border: 2px dashed #9ca3af; */ /* border-gray-400, opcional */
+           object-fit: cover; /* Para que la imagen llene el contenedor */
+           width: 100%;
+           height: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-xl"> <!-- Ajustado max-w-xl -->
+        <div class="flex justify-start mb-6">
+            <!-- Enlace a la página principal o de gestión de miembros -->
+            <a href="gestionar_miembros.html" id="backLink" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                Volver a Gestión de Miembros
+            </a>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">Enrolamiento Facial de Miembro</h1>
+
+        <div class="space-y-4 mb-6">
+            <div>
+                <label for="memberIdDisplay" class="block text-sm font-medium text-gray-700 mb-1">ID del Miembro:</label>
+                <input type="text" id="memberIdDisplay" name="memberIdDisplay" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+            </div>
+            <div>
+                <label for="memberNameDisplay" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Miembro:</label>
+                <input type="text" id="memberNameDisplay" name="memberNameDisplay" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
+            </div>
+        </div>
+
+        <div class="video-container mb-4">
+            <video id="webcamFeed" playsinline autoplay muted class="bg-gray-200"></video>
+        </div>
+        <div class="canvas-container hidden"> 
+            <canvas id="photoCanvas"></canvas>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 items-center">
+            <button id="startCameraButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Iniciar Cámara
+            </button>
+            <button id="capturePhotoButton" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50" disabled>
+                Capturar y Enrolar Foto
+            </button>
+             <button id="finishEnrollmentButton" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                Finalizar Enrolamiento
+            </button>
+        </div>
+        
+        <p id="photosTaken" class="text-center text-sm text-gray-600 mb-2">Fotos para enrolamiento: 0</p>
+        <div id="messageArea" class="text-center text-sm text-gray-600 min-h-[20px] mb-4"></div>
+
+        <div id="capturedPhotosPreview" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-4">
+            <!-- Miniaturas de fotos capturadas y enroladas -->
+        </div>
+
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        const video = document.getElementById('webcamFeed');
+        const canvas = document.getElementById('photoCanvas');
+        const startCameraButton = document.getElementById('startCameraButton');
+        const capturePhotoButton = document.getElementById('capturePhotoButton');
+        const finishEnrollmentButton = document.getElementById('finishEnrollmentButton');
+        
+        const memberIdDisplay = document.getElementById('memberIdDisplay');
+        const memberNameDisplay = document.getElementById('memberNameDisplay');
+        const messageArea = document.getElementById('messageArea');
+        const photosTakenDisplay = document.getElementById('photosTaken');
+        const capturedPhotosPreview = document.getElementById('capturedPhotosPreview');
+
+        let stream = null;
+        let miembroIdParaEnrolar = null;
+        let fotosEnroladasCount = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            miembroIdParaEnrolar = urlParams.get('miembroId');
+            const nombreMiembro = urlParams.get('nombre');
+
+            if (miembroIdParaEnrolar && memberIdDisplay) {
+                memberIdDisplay.value = miembroIdParaEnrolar;
+            } else {
+                showNotification('ID de Miembro no encontrado en URL. No se podrá enrolar.', 'error', 5000);
+                capturePhotoButton.disabled = true;
+            }
+            if (nombreMiembro && memberNameDisplay) {
+                memberNameDisplay.value = nombreMiembro;
+            }
+        });
+
+        startCameraButton.addEventListener('click', async () => {
+            if (stream && stream.active) { // Si la cámara ya está activa, la detenemos
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                video.srcObject = null;
+                video.classList.add('bg-gray-200');
+                capturePhotoButton.disabled = true;
+                startCameraButton.textContent = 'Iniciar Cámara';
+                startCameraButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+                startCameraButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                messageArea.textContent = 'Cámara detenida.';
+                showToast('Cámara detenida.');
+            } else { // Si la cámara no está activa, la iniciamos
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                    video.srcObject = stream;
+                    video.onloadedmetadata = () => { // Asegurar que el video esté listo
+                        video.play();
+                        video.classList.remove('bg-gray-200'); 
+                        capturePhotoButton.disabled = false;
+                        startCameraButton.textContent = 'Detener Cámara';
+                        startCameraButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                        startCameraButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                        messageArea.textContent = 'Cámara iniciada. Centre su rostro.';
+                        showToast('Cámara iniciada correctamente.');
+                    };
+                } catch (error) {
+                    console.error('Error al acceder a la cámara:', error);
+                    messageArea.textContent = 'Error al acceder a la cámara. Revisa los permisos.';
+                    showToast(`Error cámara: ${error.name}`, 'error');
+                    capturePhotoButton.disabled = true;
+                }
+            }
+        });
+
+        function dataURLtoBlob(dataurl) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+            return new Blob([u8arr], {type:mime});
+        }
+
+        capturePhotoButton.addEventListener('click', async () => {
+            if (!stream || !stream.active) {
+                showToast('La cámara no está activa.', 'error');
+                return;
+            }
+            if (!miembroIdParaEnrolar) {
+                showToast('ID de Miembro no disponible para enrolar.', 'error');
+                return;
+            }
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageDataUrl = canvas.toDataURL('image/png'); // O 'image/jpeg'
+            const imageBlob = dataURLtoBlob(imageDataUrl);
+
+            // Enviar imagen al backend para enrolar
+            const formData = new FormData();
+            formData.append('image', imageBlob, `enroll_${miembroIdParaEnrolar}_${Date.now()}.png`);
+            // 'miembroId' ya está en la URL del endpoint, pero es bueno tenerlo por si se necesita en el cuerpo en el futuro.
+            // formData.append('miembroId', miembroIdParaEnrolar); 
+
+            capturePhotoButton.disabled = true;
+            capturePhotoButton.textContent = 'Procesando...';
+
+            try {
+                showToast('Enviando foto para enrolamiento...', 'info');
+                // Usar el endpoint /api/miembros/<id_miembro>/enrolar_rostro
+                // que espera un 'image' en request.files
+                const response = await fetch(`${API_BASE_URL}/miembros/${miembroIdParaEnrolar}/enrolar_rostro`, {
+                    method: 'POST',
+                    body: formData,
+                    // No establecer 'Content-Type' para FormData, el navegador lo hace.
+                });
+                
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || `Error del servidor: ${response.status}`);
+                }
+                
+                showToast(result.message || 'Foto enrolada exitosamente.', 'success');
+                messageArea.textContent = `Foto ${fotosEnroladasCount + 1} enrolada para ${memberNameDisplay.value}.`;
+                fotosEnroladasCount++;
+                photosTakenDisplay.textContent = `Fotos para enrolamiento: ${fotosEnroladasCount}`;
+
+                // Mostrar miniatura de la foto enrolada
+                const imgPreview = document.createElement('img');
+                imgPreview.src = imageDataUrl;
+                imgPreview.className = 'w-full h-auto object-cover rounded-md shadow-sm';
+                imgPreview.alt = `Foto enrolada ${fotosEnroladasCount}`;
+                capturedPhotosPreview.appendChild(imgPreview);
+
+            } catch (error) {
+                console.error('Error al enrolar rostro:', error);
+                showToast(`Error enrolamiento: ${error.message}`, 'error');
+                messageArea.textContent = `Error al enrolar: ${error.message}`;
+            } finally {
+                capturePhotoButton.disabled = false;
+                capturePhotoButton.textContent = 'Capturar y Enrolar Foto';
+            }
+        });
+
+        finishEnrollmentButton.addEventListener('click', () => {
+            showToast('Proceso de enrolamiento facial finalizado.', 'info');
+            // Redirigir a la página de gestión de miembros u otra página relevante
+            setTimeout(() => {
+                 window.location.href = document.getElementById('backLink').href || 'gestionar_miembros.html';
+            }, 1500);
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>

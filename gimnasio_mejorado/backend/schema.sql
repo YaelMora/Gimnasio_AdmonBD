@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS miembros (
     apellido TEXT NOT NULL,
     telefono TEXT,
     correo TEXT UNIQUE,
-    contrasena_hash TEXT, -- NUEVO CAMPO PARA CONTRASEÑA DE MIEMBRO
+    contrasena_hash TEXT, 
     fecha_nacimiento DATE,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
     id_membresia_actual INTEGER,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS miembros (
     estado_membresia TEXT DEFAULT 'inactiva' 
 );
 
--- Tabla de Imágenes de Miembros
+-- Tabla de Imágenes de Miembros (para fotos de perfil y enrolamiento)
 CREATE TABLE IF NOT EXISTS imagenes_miembros (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     miembro_id INTEGER NOT NULL,
@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS imagenes_miembros (
     fecha_captura DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (miembro_id) REFERENCES miembros(id) ON DELETE CASCADE
 );
+
+-- La tabla miembro_encodings_faciales ha sido eliminada.
 
 -- Tabla de Accesos
 CREATE TABLE IF NOT EXISTS accesos (
@@ -46,9 +48,9 @@ CREATE TABLE IF NOT EXISTS accesos (
     tipo_acceso TEXT NOT NULL, -- 'ingreso' o 'salida'
     fecha_hora_acceso DATETIME DEFAULT CURRENT_TIMESTAMP,
     metodo_verificacion TEXT, -- 'id_password', 'captura_manual', 'reconocimiento_facial'
-    imagen_acceso_id INTEGER,
+    imagen_acceso_id INTEGER, 
     FOREIGN KEY (miembro_id) REFERENCES miembros(id) ON DELETE SET NULL,
-    FOREIGN KEY (imagen_acceso_id) REFERENCES imagenes_miembros(id) ON DELETE SET NULL
+    FOREIGN KEY (imagen_acceso_id) REFERENCES imagenes_miembros(id) ON DELETE SET NULL 
 );
 
 -- Tabla de Tipos de Membresía
@@ -59,8 +61,3 @@ CREATE TABLE IF NOT EXISTS tipos_membresia (
     precio REAL NOT NULL
 );
 
--- Insertar algunos tipos de membresía base (opcional)
--- INSERT INTO tipos_membresia (nombre, duracion_dias, precio) VALUES
--- ('1 Mes', 30, 500.00),
--- ('3 Meses', 90, 1350.00),
--- ('6 Meses', 180, 2500.00);

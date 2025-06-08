@@ -4,5 +4,8 @@ bcrypt
 python-dotenv
 Pillow
 qrcode
-pywhatkit
 openpyxl
+pywhatkit
+opencv-python
+opencv-contrib-python
+numpy

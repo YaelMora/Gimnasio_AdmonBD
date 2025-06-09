@@ -1,6 +1,11 @@
 # Sistema de Gestión de Gimnasio
 
-Este proyecto es un sistema de gestión de gimnasio diseñado para administrar miembros, gerentes, control de acceso y reportes. Cuenta con un frontend basado en HTML, CSS y JavaScript, y un backend desarrollado en Python con Flask y SQLite como base de datos.
+Sistema de Gestión de Gimnasio con Reconocimiento Facial y QR
+Este proyecto es un prototipo de un sistema de reconocimiento facial de control de acceso para gimnasios con la finalidad de modernizar el proceso de registro y control de acceso de los usuarios.
+
+Este sistema tendrá una interfaz que permita a los administradores del gimnasio registrar nuevos usuarios, gestionar membresías y revisar registros de acceso, utilizando una base de datos relacional para almacenar la información de los usuarios y datos relacionados al gimnasio.
+
+Contará con un control de acceso por medio de un sistema de reconocimiento facial para identificar y autenticar a los usuarios, además de un sistema de códigos QR como método alternativo.
 
 ## Tecnologías Utilizadas
 

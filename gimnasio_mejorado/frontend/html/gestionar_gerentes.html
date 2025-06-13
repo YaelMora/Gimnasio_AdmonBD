@@ -158,16 +158,32 @@
     <script src="../js/utils.js"></script>
     <script src="../js/api.js"></script>
     <script>
-        // MOCK DATA - Replace with API calls
-        const sampleGerentes = [
-            { id: 1, nombre: "Admin", apellido: "Principal", telefono: "5500000000", email: "admin@gym.com", rfc: "ADMI010101XYZ" },
-            { id: 2, nombre: "Laura", apellido: "Martinez", telefono: "5512345678", email: "laura@gym.com", rfc: "LAMA020202ABC" }
-        ];
+        // Variable para guardar la lista de gerentes y poder usarla en la edición
+        let listaDeGerentes = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarYMostrarGerentes();
+        });
+
+        // USA `api.js` y `utils.js`
+        async function cargarYMostrarGerentes() {
+            try {
+                // ANTES: Usábamos fetch() aquí directamente.
+                // AHORA: Usamos la función clara y simple de api.js
+                listaDeGerentes = await obtenerGerentes(); //
+                renderGerentesTable(listaDeGerentes);
+            } catch (error) {
+                console.error('Error al cargar gerentes:', error);
+                // ANTES: Manipulábamos el DOM para mostrar un error.
+                // AHORA: Usamos la función de utilidades para mostrar una notificación.
+                showToast(`Error al cargar los gerentes: ${error.message}`, 'error'); //
+            }
+        }
 
         function renderGerentesTable(gerentes) {
             const tableBody = document.getElementById('tablaGerentesBody');
             const noDataMessage = document.getElementById('noDataMessageGerentes');
-            tableBody.innerHTML = ''; 
+            tableBody.innerHTML = '';
 
             if (!gerentes || gerentes.length === 0) {
                 noDataMessage.classList.remove('hidden');
@@ -192,10 +208,14 @@
             });
         }
 
+        // NO cambia la lógica, pero ahora sabemos de dónde vienen los datos
         function openEditGerenteModal(gerenteId) {
-            // In a real app, you would fetch this data from an API
-            const gerente = sampleGerentes.find(g => g.id === gerenteId); 
-            if (!gerente) return;
+            // Buscamos el gerente en la lista que ya cargamos desde la API
+            const gerente = listaDeGerentes.find(g => g.id === gerenteId);
+            if (!gerente) {
+                showToast('No se pudo encontrar al gerente para editar.', 'error'); //
+                return;
+            }
 
             document.getElementById('editGerenteId').value = gerente.id;
             document.getElementById('editNombreGerente').value = gerente.nombre;
@@ -204,45 +224,63 @@
             document.getElementById('editCorreoGerente').value = gerente.email;
             document.getElementById('editRFCGerente').value = gerente.rfc;
 
-            document.getElementById('editGerenteModal').classList.remove('hidden');
+            // En lugar de manipular clases directamente, podríamos usar la función de utils.js
+            openModal('editGerenteModal'); //
         }
-
+        
+        // USA `utils.js`
         function closeEditGerenteModal() {
-            document.getElementById('editGerenteModal').classList.add('hidden');
-            document.getElementById('editGerenteForm').reset();
+            closeModal('editGerenteModal'); //
+            resetForm('editGerenteForm'); //
         }
 
-        document.getElementById('editGerenteForm').addEventListener('submit', function(event) {
+        // USA `api.js` y `utils.js`
+        document.getElementById('editGerenteForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const gerenteId = document.getElementById('editGerenteId').value;
-            // In a real app, call an API to update the data
-            console.log(`Updating manager ID: ${gerenteId}`);
-            if(typeof showNotification === 'function') showNotification('Gerente actualizado (simulación).', 'success');
-            closeEditGerenteModal();
-        });
+            const datosActualizados = {
+                nombre: document.getElementById('editNombreGerente').value,
+                apellido: document.getElementById('editApellidoGerente').value,
+                telefono: document.getElementById('editTelefonoGerente').value,
+                email: document.getElementById('editCorreoGerente').value,
+                rfc: document.getElementById('editRFCGerente').value,
+            };
 
+            try {
+                // AHORA: Usamos la función de actualización de la API
+                await actualizarGerente(gerenteId, datosActualizados); //
+                showToast('Gerente actualizado exitosamente.', 'success'); //
+                closeEditGerenteModal();
+                cargarYMostrarGerentes(); // Recargamos la tabla
+            } catch (error) {
+                showToast(`Error al actualizar: ${error.message}`, 'error'); //
+            }
+        });
+        
+        // USA `utils.js`
         function openDeleteGerenteModal(gerenteId) {
             document.getElementById('deleteGerenteId').value = gerenteId;
-            document.getElementById('deleteGerenteConfirmModal').classList.remove('hidden');
+            openModal('deleteGerenteConfirmModal'); //
         }
 
+        // USA `utils.js`
         function closeDeleteGerenteModal() {
-            document.getElementById('deleteGerenteConfirmModal').classList.add('hidden');
+            closeModal('deleteGerenteConfirmModal'); //
         }
-
-        function confirmDeleteGerente() {
+        
+        // USA `api.js` y `utils.js`
+        async function confirmDeleteGerente() {
             const gerenteId = document.getElementById('deleteGerenteId').value;
-            // In a real app, call an API to delete the data
-            console.log(`Deleting manager ID: ${gerenteId}`);
-            if(typeof showNotification === 'function') showNotification('Gerente eliminado (simulación).', 'success');
-            closeDeleteGerenteModal();
-            // Here you would re-fetch the data to update the table
+            try {
+                // AHORA: Usamos la función de eliminación de la API
+                await eliminarGerente(gerenteId); //
+                showToast('Gerente eliminado exitosamente.', 'success'); //
+                closeDeleteGerenteModal();
+                cargarYMostrarGerentes(); // Recargamos la tabla
+            } catch (error) {
+                showToast(`Error al eliminar: ${error.message}`, 'error'); //
+            }
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Replace this with a function that fetches data from your API
-            renderGerentesTable(sampleGerentes);
-        });
     </script>
 </body>
 </html>

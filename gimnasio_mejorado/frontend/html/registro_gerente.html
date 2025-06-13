@@ -7,48 +7,94 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .main-container {
+            background-color: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 500px;
+        }
+        .input-field {
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.3);
+        }
+        .button-base {
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .button-primary { background-color: #4299e1; color: white; }
+        .button-primary:hover { background-color: #3182ce; }
+        .button-disabled {
+             background-color: #4a5568;
+             cursor: not-allowed;
+             opacity: 0.7;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 sm:p-10 rounded-xl shadow-2xl w-full max-w-lg">
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="main-container">
         <div class="flex justify-start mb-6">
-            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+            <a href="index.html" class="text-blue-400 hover:text-blue-300 font-medium flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
                 Volver
             </a>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8">Registro de Gerente</h1>
-        <form id="registroGerenteForm" class="space-y-6">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-100 mb-8">Registro de Nuevo Gerente</h1>
+        <form id="registroGerenteForm" class="space-y-5">
             <div>
-                <label for="nombreGerente" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                <input type="text" id="nombreGerente" name="nombreGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
+                <label for="nombreGerente" class="block text-sm font-medium text-gray-300 mb-1">Nombre</label>
+                <input type="text" id="nombreGerente" name="nombreGerente" class="w-full input-field" required>
             </div>
             <div>
-                <label for="apellidoGerente" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                <input type="text" id="apellidoGerente" name="apellidoGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
+                <label for="apellidoGerente" class="block text-sm font-medium text-gray-300 mb-1">Apellido</label>
+                <input type="text" id="apellidoGerente" name="apellidoGerente" class="w-full input-field" required>
             </div>
             <div>
-                <label for="telefonoGerente" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                <input type="tel" id="telefonoGerente" name="telefonoGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                <label for="telefonoGerente" class="block text-sm font-medium text-gray-300 mb-1">Teléfono</label>
+                <input type="tel" id="telefonoGerente" name="telefonoGerente" class="w-full input-field">
             </div>
             <div>
-                <label for="correoGerente" class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
-                <input type="email" id="correoGerente" name="correoGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
+                <label for="correoGerente" class="block text-sm font-medium text-gray-300 mb-1">Correo</label>
+                <input type="email" id="correoGerente" name="correoGerente" class="w-full input-field" required>
             </div>
             <div>
-                <label for="rfcGerente" class="block text-sm font-medium text-gray-700 mb-1">RFC</label>
-                <input type="text" id="rfcGerente" name="rfcGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" pattern="[A-Z&Ñ]{3,4}[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])[A-Z0-9]{2}[0-9A]" title="Introduce un RFC válido (ej. ABCD010101XYZ)" required>
+                <label for="rfcGerente" class="block text-sm font-medium text-gray-300 mb-1">RFC</label>
+                <input type="text" id="rfcGerente" name="rfcGerente" class="w-full input-field" pattern="[A-Z&Ñ]{3,4}[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])[A-Z0-9]{2}[0-9A]" title="Introduce un RFC válido (ej. ABCD010101XYZ)" required>
             </div>
             <div>
-                <label for="contrasena" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                <input type="password" id="contrasena" name="contrasena" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required minlength="6">
+                <label for="contrasena" class="block text-sm font-medium text-gray-300 mb-1">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" class="w-full input-field" required minlength="6">
             </div>
             <div>
-                <label for="confirmarContrasena" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
-                <input type="password" id="confirmarContrasena" name="confirmarContrasena" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required minlength="6">
+                <label for="confirmarContrasena" class="block text-sm font-medium text-gray-300 mb-1">Confirmar Contraseña</label>
+                <input type="password" id="confirmarContrasena" name="confirmarContrasena" class="w-full input-field" required minlength="6">
             </div>
-            <button type="submit" id="submitBtnGerente" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Registrar</button>
+            <button type="submit" id="submitBtnGerente" class="button-base button-primary text-lg !mt-8">Registrar</button>
         </form>
     </div>
 
@@ -65,11 +111,11 @@
             const confirmarContrasena = document.getElementById('confirmarContrasena').value;
 
             if (contrasena !== confirmarContrasena) {
-                showNotification('Las contraseñas no coinciden.', 'error');
+                if(typeof showNotification === 'function') showNotification('Las contraseñas no coinciden.', 'error');
                 return;
             }
             if (contrasena.length < 6) {
-                showNotification('La contraseña debe tener al menos 6 caracteres.', 'error');
+                if(typeof showNotification === 'function') showNotification('La contraseña debe tener al menos 6 caracteres.', 'error');
                 return;
             }
 
@@ -79,12 +125,13 @@
             if (submitBtnGerente) {
                 submitBtnGerente.disabled = true;
                 submitBtnGerente.textContent = 'Registrando...';
+                submitBtnGerente.classList.add('button-disabled');
             }
 
             try {
-                showNotification('Registrando gerente...', 'info', 2500);
+                if(typeof showNotification === 'function') showNotification('Registrando gerente...', 'info');
                 const nuevoGerente = await registrarGerente(gerenteData);
-                showNotification(`Gerente (ID: ${nuevoGerente.id}) registrado exitosamente. Redirigiendo...`, 'success', 3000);
+                if(typeof showNotification === 'function') showNotification(`Gerente (ID: ${nuevoGerente.id}) registrado. Redirigiendo...`, 'success', 3000);
                 
                 this.reset();
                 setTimeout(() => {
@@ -92,11 +139,12 @@
                 }, 3000);
 
             } catch (error) {
-                showNotification(`Error al registrar gerente: ${error.message}`, 'error', 4000);
+                if(typeof showNotification === 'function') showNotification(`Error al registrar gerente: ${error.message}`, 'error');
             } finally {
                  if (submitBtnGerente) {
                     submitBtnGerente.disabled = false;
                     submitBtnGerente.textContent = 'Registrar';
+                    submitBtnGerente.classList.remove('button-disabled');
                 }
             }
         });

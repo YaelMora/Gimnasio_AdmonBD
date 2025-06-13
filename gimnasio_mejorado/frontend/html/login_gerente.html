@@ -7,28 +7,83 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark background for a modern gym feel */
+        }
+        .login-container {
+            background-color: #2d3748; /* Slightly lighter card background */
+            border-radius: 1rem; /* Softer corners */
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 400px;
+        }
+        .input-field {
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #63b3ed; /* A nice blue for focus */
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.3);
+        }
+        .main-button {
+            background-color: #48bb78; /* A vibrant green for the main action */
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .main-button:hover {
+            background-color: #38a169;
+        }
+        .main-button:disabled {
+            background-color: #68d391;
+            cursor: not-allowed;
+        }
+        .link {
+            color: #90cdf4;
+            transition: color 0.2s ease-in-out;
+            font-size: 0.875rem;
+        }
+        .link:hover {
+            color: #63b3ed;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 sm:p-10 rounded-xl shadow-2xl w-full max-w-md">
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="login-container">
         <div class="text-center mb-8">
-            <img src="https://placehold.co/100x100/3b82f6/ffffff?text=GymLogo" alt="Logo Gimnasio" class="mx-auto rounded-full mb-4">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Inicio de Sesión de Gerente</h1>
+            <svg class="mx-auto h-16 w-16 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <h1 class="text-3xl font-bold text-gray-100 mt-4">Acceso Gerencial</h1>
+            <p class="text-gray-400 mt-2">Bienvenido de nuevo</p>
         </div>
         <form id="loginGerenteForm" class="space-y-6">
             <div>
-                <label for="loginIdGerente" class="block text-sm font-medium text-gray-700 mb-1">ID o Correo del Gerente</label>
-                <input type="text" id="loginIdGerente" name="idGerente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required autocomplete="username">
+                <label for="loginIdGerente" class="block text-sm font-medium text-gray-300 mb-2">ID o Correo del Gerente</label>
+                <input type="text" id="loginIdGerente" name="idGerente" class="w-full input-field" required autocomplete="username" placeholder="tu@email.com">
             </div>
             <div>
-                <label for="loginContrasenaGerente" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                <input type="password" id="loginContrasenaGerente" name="contrasena" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required autocomplete="current-password">
+                <label for="loginContrasenaGerente" class="block text-sm font-medium text-gray-300 mb-2">Contraseña</label>
+                <input type="password" id="loginContrasenaGerente" name="contrasena" class="w-full input-field" required autocomplete="current-password" placeholder="••••••••">
             </div>
-            <button type="submit" id="btnLogin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out text-lg">
+            <button type="submit" id="btnLogin" class="w-full main-button">
                 Iniciar Sesión
             </button>
         </form>
         <div class="mt-6 text-center">
-            <a href="index.html" class="text-sm text-blue-600 hover:text-blue-800">Volver a la página principal</a>
+            <a href="index.html" class="link">Volver a la página principal</a>
         </div>
     </div>
 
@@ -38,7 +93,7 @@
         const loginGerenteForm = document.getElementById('loginGerenteForm');
         const btnLogin = document.getElementById('btnLogin');
 
-        // Redirigir si ya hay una sesión activa
+        // Redirect if a session is already active
         if (localStorage.getItem('gerenteSession')) {
             window.location.href = 'index.html';
         }
@@ -59,25 +114,24 @@
             }
 
             try {
-                showNotification('Validando credenciales...', 'info', 2000);
-                // La función validarGerente ahora debería devolver más datos del gerente
+                // The 'validarGerente' function should return more data about the manager
                 const gerenteInfo = await validarGerente(idGerente, contrasena); 
 
-                if (gerenteInfo && gerenteInfo.idGerente) { // Asumiendo que el backend devuelve idGerente y otros datos
-                    // Guardar información de sesión. Podrías guardar el objeto entero o solo lo necesario.
-                    // Por seguridad, no guardes la contraseña aquí.
-                    // El backend debería devolver nombre, correo, etc., pero no la contraseña.
+                if (gerenteInfo && gerenteInfo.idGerente) { // Assuming the backend returns idGerente and other data
+                    // Save session information. You could save the whole object or just what's necessary.
+                    // For security, do not save the password here.
+                    // The backend should return name, email, etc., but not the password.
                     localStorage.setItem('gerenteSession', JSON.stringify({
                         id: gerenteInfo.idGerente,
-                        nombre: gerenteInfo.nombre, // Asumiendo que el backend devuelve 'nombre'
-                        correo: gerenteInfo.correo // Asumiendo que el backend devuelve 'correo'
+                        nombre: gerenteInfo.nombre, // Assuming the backend returns 'nombre'
+                        correo: gerenteInfo.correo // Assuming the backend returns 'correo'
                     }));
                     showNotification(`Bienvenido, ${gerenteInfo.nombre || 'Gerente'}! Redirigiendo...`, 'success', 2500);
                     setTimeout(() => {
-                        window.location.href = 'index.html'; // Redirigir a la página principal (administración)
+                        window.location.href = 'index.html'; // Redirect to the main admin page
                     }, 2500);
                 } else {
-                    // Esto no debería ocurrir si validarGerente lanza error en caso de fallo
+                    // This shouldn't happen if 'validarGerente' throws an error on failure
                     showNotification('Respuesta inesperada del servidor.', 'error');
                 }
             } catch (error) {

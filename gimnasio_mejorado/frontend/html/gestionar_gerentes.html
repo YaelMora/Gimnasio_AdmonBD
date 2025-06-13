@@ -6,128 +6,159 @@
     <title>Administración de Gerentes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .main-container {
+            background-color: #2d3748;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
         .table-header {
-            @apply px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50;
+            background-color: #4a5568;
         }
-        .table-cell {
-            @apply px-4 py-3 whitespace-nowrap text-sm text-gray-700;
+        .table-row:nth-child(even) {
+            background-color: #4a556840;
         }
-        .action-button {
-            @apply px-3 py-1 text-xs font-medium rounded-md;
+        .modal-content-dark {
+            background-color: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 500px;
         }
-        .edit-button {
-            @apply bg-yellow-400 hover:bg-yellow-500 text-yellow-800 action-button;
+        .input-field {
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
-        .delete-button {
-            @apply bg-red-500 hover:bg-red-600 text-white action-button;
+        .input-field:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.3);
         }
-        .modal {
-            @apply fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center p-4;
+        .button-base {
+            display: inline-block;
+            text-align: center;
+            font-weight: 600;
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
         }
-        .modal-content {
-            @apply bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md sm:max-w-lg;
-        }
-         .input-field {
-            @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm;
-        }
-        .label-text {
-            @apply block text-sm font-medium text-gray-700 mb-1;
-        }
-         .main-button {
-            @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg;
-        }
-        .secondary-button {
-            @apply bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-150 ease-in-out w-full;
-        }
+        .button-primary { background-color: #4299e1; color: white; }
+        .button-primary:hover { background-color: #3182ce; }
+        .button-secondary { background-color: #718096; color: white; }
+        .button-secondary:hover { background-color: #4a5568; }
+        .button-success { background-color: #48bb78; color: white; }
+        .button-success:hover { background-color: #38a169; }
+        .button-warning { background-color: #f6ad55; color: #422006; }
+        .button-warning:hover { background-color: #ed8936; }
+        .button-danger { background-color: #f56565; color: white; }
+        .button-danger:hover { background-color: #e53e3e; }
+
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 sm:p-6">
-    <header class="mb-8">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm sm:text-base">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-                Inicio
-            </a>
-            <h1 class="text-xl sm:text-3xl font-bold text-gray-800 text-center flex-grow">Administración de Gerentes</h1>
-            <a href="registro_gerente.html" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg shadow-md text-xs sm:text-sm whitespace-nowrap">
-                + Registrar Nuevo
-            </a>
-        </div>
-    </header>
+<body class="min-h-screen p-4 sm:p-6">
+    <main class="max-w-7xl mx-auto">
+        <header class="mb-8">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="text-blue-400 hover:text-blue-300 font-medium flex items-center text-sm sm:text-base">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Inicio
+                </a>
+                <h1 class="text-xl sm:text-3xl font-bold text-gray-100 text-center flex-grow">Administración de Gerentes</h1>
+                <a href="registro_gerente.html" class="button-base button-success whitespace-nowrap text-xs sm:text-sm">
+                    + Registrar Nuevo
+                </a>
+            </div>
+        </header>
 
-    <main class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-2xl">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead>
-                    <tr>
-                        <th class="table-header">Id</th>
-                        <th class="table-header">Nombre</th>
-                        <th class="table-header">Apellido</th>
-                        <th class="table-header">Teléfono</th>
-                        <th class="table-header">Email</th>
-                        <th class="table-header">RFC</th>
-                        <th class="table-header">Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaGerentesBody" class="bg-white divide-y divide-gray-200">
+        <div class="main-container">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-700">
+                    <thead class="table-header">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Id</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Nombre</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Teléfono</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">RFC</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaGerentesBody" class="divide-y divide-gray-700">
+                        <!-- Rows will be injected by JavaScript -->
                     </tbody>
-            </table>
+                </table>
+            </div>
+            <p id="noDataMessageGerentes" class="text-center text-gray-400 py-8 hidden">No hay gerentes registrados.</p>
         </div>
-        <p id="noDataMessageGerentes" class="text-center text-gray-500 py-8 hidden">No hay gerentes registrados.</p>
     </main>
 
-    <div id="editGerenteModal" class="modal hidden">
-        <div class="modal-content">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center">Cambios de Datos de Gerente</h2>
+    <!-- Edit Manager Modal -->
+    <div id="editGerenteModal" class="fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center p-4 hidden">
+        <div class="modal-content-dark">
+            <h2 class="text-2xl font-semibold text-gray-100 mb-6 text-center">Editar Datos de Gerente</h2>
             <form id="editGerenteForm" class="space-y-5">
                 <input type="hidden" id="editGerenteId">
                 <div>
-                    <label for="editNombreGerente" class="label-text">Nombre</label>
-                    <input type="text" id="editNombreGerente" class="input-field" required>
+                    <label for="editNombreGerente" class="block text-sm font-medium text-gray-300 mb-2">Nombre</label>
+                    <input type="text" id="editNombreGerente" class="w-full input-field" required>
                 </div>
                 <div>
-                    <label for="editApellidoGerente" class="label-text">Apellido</label>
-                    <input type="text" id="editApellidoGerente" class="input-field" required>
+                    <label for="editApellidoGerente" class="block text-sm font-medium text-gray-300 mb-2">Apellido</label>
+                    <input type="text" id="editApellidoGerente" class="w-full input-field" required>
                 </div>
                 <div>
-                    <label for="editTelefonoGerente" class="label-text">Teléfono</label>
-                    <input type="tel" id="editTelefonoGerente" class="input-field" required>
+                    <label for="editTelefonoGerente" class="block text-sm font-medium text-gray-300 mb-2">Teléfono</label>
+                    <input type="tel" id="editTelefonoGerente" class="w-full input-field" required>
                 </div>
                 <div>
-                    <label for="editCorreoGerente" class="label-text">Correo</label>
-                    <input type="email" id="editCorreoGerente" class="input-field" required>
+                    <label for="editCorreoGerente" class="block text-sm font-medium text-gray-300 mb-2">Correo</label>
+                    <input type="email" id="editCorreoGerente" class="w-full input-field" required>
                 </div>
                  <div>
-                    <label for="editRFCGerente" class="label-text">RFC</label>
-                    <input type="text" id="editRFCGerente" class="input-field" required>
+                    <label for="editRFCGerente" class="block text-sm font-medium text-gray-300 mb-2">RFC</label>
+                    <input type="text" id="editRFCGerente" class="w-full input-field" required>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                    <button type="button" onclick="closeEditGerenteModal()" class="secondary-button">Cancelar</button>
-                    <button type="submit" class="main-button bg-green-500 hover:bg-green-600">Actualizar</button>
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button type="button" onclick="closeEditGerenteModal()" class="button-base button-secondary w-full">Cancelar</button>
+                    <button type="submit" class="button-base button-primary w-full">Actualizar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="deleteGerenteConfirmModal" class="modal hidden">
-        <div class="modal-content max-w-sm">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Confirmar Eliminación</h2>
-            <p class="text-gray-600 mb-6 text-center">¿Está seguro de que desea eliminar este registro?</p>
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteGerenteConfirmModal" class="fixed inset-0 bg-black bg-opacity-70 h-full w-full flex items-center justify-center p-4 hidden">
+        <div class="modal-content-dark max-w-sm">
+            <h2 class="text-xl font-semibold text-gray-100 mb-4 text-center">Confirmar Eliminación</h2>
+            <p class="text-gray-400 mb-6 text-center">¿Está seguro de que desea eliminar este registro?</p>
             <input type="hidden" id="deleteGerenteId">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button type="button" onclick="closeDeleteGerenteModal()" class="secondary-button">Cancelar</button>
-                <button type="button" onclick="confirmDeleteGerente()" class="main-button bg-red-600 hover:bg-red-700">Aceptar</button>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button type="button" onclick="closeDeleteGerenteModal()" class="button-base button-secondary w-full">Cancelar</button>
+                <button type="button" onclick="confirmDeleteGerente()" class="button-base button-danger w-full">Eliminar</button>
             </div>
         </div>
     </div>
 
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
     <script>
+        // MOCK DATA - Replace with API calls
         const sampleGerentes = [
             { id: 1, nombre: "Admin", apellido: "Principal", telefono: "5500000000", email: "admin@gym.com", rfc: "ADMI010101XYZ" },
             { id: 2, nombre: "Laura", apellido: "Martinez", telefono: "5512345678", email: "laura@gym.com", rfc: "LAMA020202ABC" }
@@ -138,7 +169,7 @@
             const noDataMessage = document.getElementById('noDataMessageGerentes');
             tableBody.innerHTML = ''; 
 
-            if (gerentes.length === 0) {
+            if (!gerentes || gerentes.length === 0) {
                 noDataMessage.classList.remove('hidden');
                 return;
             }
@@ -146,22 +177,23 @@
 
             gerentes.forEach(gerente => {
                 const row = tableBody.insertRow();
+                row.className = 'table-row';
                 row.innerHTML = `
-                    <td class="table-cell">${gerente.id}</td>
-                    <td class="table-cell">${gerente.nombre}</td>
-                    <td class="table-cell">${gerente.apellido}</td>
-                    <td class="table-cell">${gerente.telefono}</td>
-                    <td class="table-cell">${gerente.email}</td>
-                    <td class="table-cell">${gerente.rfc}</td>
-                    <td class="table-cell space-x-2 whitespace-nowrap">
-                        <button onclick="openEditGerenteModal(${gerente.id})" class="edit-button">Cambios</button>
-                        <button onclick="openDeleteGerenteModal(${gerente.id})" class="delete-button">Eliminar</button>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${gerente.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200 font-medium">${gerente.nombre} ${gerente.apellido}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${gerente.telefono}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${gerente.email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${gerente.rfc}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center space-x-2">
+                        <button onclick="openEditGerenteModal(${gerente.id})" class="button-base button-warning text-xs">Editar</button>
+                        <button onclick="openDeleteGerenteModal(${gerente.id})" class="button-base button-danger text-xs">Eliminar</button>
                     </td>
                 `;
             });
         }
 
         function openEditGerenteModal(gerenteId) {
+            // In a real app, you would fetch this data from an API
             const gerente = sampleGerentes.find(g => g.id === gerenteId); 
             if (!gerente) return;
 
@@ -183,13 +215,10 @@
         document.getElementById('editGerenteForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const gerenteId = document.getElementById('editGerenteId').value;
-            console.log(`Actualizando gerente ID: ${gerenteId}`, {
-                nombre: document.getElementById('editNombreGerente').value,
-                // ...otros campos
-            });
-            alert('Gerente actualizado (simulación).');
+            // In a real app, call an API to update the data
+            console.log(`Updating manager ID: ${gerenteId}`);
+            if(typeof showNotification === 'function') showNotification('Gerente actualizado (simulación).', 'success');
             closeEditGerenteModal();
-            // Volver a renderizar la tabla
         });
 
         function openDeleteGerenteModal(gerenteId) {
@@ -203,13 +232,15 @@
 
         function confirmDeleteGerente() {
             const gerenteId = document.getElementById('deleteGerenteId').value;
-            console.log(`Eliminando gerente ID: ${gerenteId}`);
-            alert('Gerente eliminado (simulación).');
+            // In a real app, call an API to delete the data
+            console.log(`Deleting manager ID: ${gerenteId}`);
+            if(typeof showNotification === 'function') showNotification('Gerente eliminado (simulación).', 'success');
             closeDeleteGerenteModal();
-            renderGerentesTable(sampleGerentes.filter(g => g.id !== parseInt(gerenteId)));
+            // Here you would re-fetch the data to update the table
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Replace this with a function that fetches data from your API
             renderGerentesTable(sampleGerentes);
         });
     </script>

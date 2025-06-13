@@ -3,98 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administración de Miembros</title>
+    <title>Registro de Miembro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        /* La directiva @apply no funciona con el CDN de Tailwind, por lo que se ha eliminado este bloque. */
-        /* Los estilos se aplicarán directamente en el HTML/JS. */
-        #qrImageModal img { max-width: 80%; max-height: 80vh; margin: auto; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .main-container {
+            background-color: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 550px;
+        }
+        .input-field {
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.3);
+        }
+        .button-base {
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .button-primary { background-color: #4299e1; color: white; }
+        .button-primary:hover { background-color: #3182ce; }
+        .button-disabled {
+             background-color: #4a5568;
+             cursor: not-allowed;
+             opacity: 0.7;
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 sm:p-6">
-    <header class="mb-8">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm sm:text-base">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                Inicio
-            </a>
-            <h1 class="text-xl sm:text-3xl font-bold text-gray-800 text-center flex-grow">Administración de Miembros</h1>
-            <a href="registro_miembro.html" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg shadow-md text-xs sm:text-sm whitespace-nowrap">
-                + Registrar Nuevo
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="main-container">
+        <div class="flex justify-start mb-6">
+            <a href="index.html" class="text-blue-400 hover:text-blue-300 font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Volver
             </a>
         </div>
-        <div class="max-w-7xl mx-auto mt-4 text-center">
-             <button id="btnEntrenarModelo" class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out text-sm">
-                Entrenar Modelo Facial
-            </button>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-2xl">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Id</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Nombre</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Teléfono</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Correo</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Estado</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-1/3">Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaMiembrosBody" class="bg-white divide-y divide-gray-200"></tbody>
-            </table>
-        </div>
-        <p id="noDataMessage" class="text-center text-gray-500 py-8 hidden">No hay miembros registrados.</p>
-    </main>
-
-    <!-- Modal Editar Miembro -->
-    <div id="editMemberModal" class="modal hidden modal-global">
-        <div class="modal-content-global">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center">Cambios de Datos Miembro</h2>
-            <form id="editMemberForm" class="space-y-5">
-                <input type="hidden" id="editMemberId" name="memberId">
-                <div><label for="editNombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label><input type="text" id="editNombre" name="nombre" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></div>
-                <div><label for="editApellido" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label><input type="text" id="editApellido" name="apellido" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required></div>
-                <div><label for="editTelefono" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label><input type="tel" id="editTelefono" name="telefono" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div>
-                <div><label for="editCorreo" class="block text-sm font-medium text-gray-700 mb-1">Correo</label><input type="email" id="editCorreo" name="correo" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div>
-                <div><label for="editContrasenaMiembro" class="block text-sm font-medium text-gray-700 mb-1">Nueva Contraseña (dejar en blanco para no cambiar)</label><input type="password" id="editContrasenaMiembro" name="contrasena" class="w-full px-4 py-2 border border-gray-300 rounded-lg" minlength="6"></div>
-                 <div><label for="editFechaVencimiento" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Vencimiento</label><input type="date" id="editFechaVencimiento" name="fechaVencimiento" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></div>
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Renovar/Cambiar Membresía</label><select id="editDuracionMembresia" name="duracionMembresia" class="w-full px-4 py-2 border border-gray-300 rounded-lg"><option value="">No cambiar/No renovar</option><option value="1 Mes">1 Mes</option><option value="3 Meses">3 Meses</option><option value="6 Meses">6 Meses</option></select></div>
-                <div class="flex flex-col sm:flex-row gap-3 pt-4"><button type="button" onclick="closeModal('editMemberModal'); resetForm('editMemberForm');" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg w-full">Cancelar</button><button type="submit" id="btnUpdateMember" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg w-full">Actualizar</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal Confirmar Eliminación -->
-    <div id="deleteConfirmModal" class="modal hidden modal-global">
-        <div class="modal-content-global max-w-sm">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Confirmar Eliminación</h2>
-            <p class="text-gray-600 mb-6 text-center">¿Está seguro de que desea eliminar este registro?</p>
-            <input type="hidden" id="deleteMemberId">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button type="button" onclick="closeModal('deleteConfirmModal')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-150 ease-in-out w-full">Cancelar</button>
-                <button type="button" id="confirmDeleteButton" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full">Aceptar</button>
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-100 mb-8">Registro de Nuevo Miembro</h1>
+        <form id="registroMiembroForm" class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                    <label for="nombreMiembro" class="block text-sm font-medium text-gray-300 mb-1">Nombre</label>
+                    <input type="text" id="nombreMiembro" name="nombre" class="w-full input-field" required>
+                </div>
+                <div>
+                    <label for="apellidoMiembro" class="block text-sm font-medium text-gray-300 mb-1">Apellido</label>
+                    <input type="text" id="apellidoMiembro" name="apellido" class="w-full input-field" required>
+                </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- Modal para mostrar el QR generado -->
-    <div id="qrImageModal" class="modal hidden modal-global items-center justify-center">
-        <div class="modal-content-global p-4 text-center">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Código QR Generado</h3>
-            <img id="generatedQrImage" src="#" alt="Código QR del Miembro" class="mb-4 block mx-auto">
-            <p id="qrImagePath" class="text-xs text-gray-500 mb-4"></p>
-            <button onclick="closeModal('qrImageModal')" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">Cerrar</button>
-        </div>
+             <div>
+                <label for="correoMiembro" class="block text-sm font-medium text-gray-300 mb-1">Correo Electrónico</label>
+                <input type="email" id="correoMiembro" name="correo" class="w-full input-field" required>
+            </div>
+            <div>
+                <label for="telefonoMiembro" class="block text-sm font-medium text-gray-300 mb-1">Teléfono</label>
+                <input type="tel" id="telefonoMiembro" name="telefono" class="w-full input-field">
+            </div>
+            <div>
+                <label for="duracionMembresia" class="block text-sm font-medium text-gray-300 mb-1">Tipo de Membresía</label>
+                <select id="duracionMembresia" name="duracionMembresia" class="w-full input-field" required>
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    <option value="1 Mes">1 Mes</option>
+                    <option value="3 Meses">3 Meses</option>
+                    <option value="6 Meses">6 Meses</option>
+                    <option value="12 Meses">12 Meses</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                 <div>
+                    <label for="contrasenaMiembro" class="block text-sm font-medium text-gray-300 mb-1">Contraseña</label>
+                    <input type="password" id="contrasenaMiembro" name="contrasena" class="w-full input-field" required minlength="6">
+                </div>
+                <div>
+                    <label for="confirmarContrasenaMiembro" class="block text-sm font-medium text-gray-300 mb-1">Confirmar Contraseña</label>
+                    <input type="password" id="confirmarContrasenaMiembro" name="confirmarContrasena" class="w-full input-field" required minlength="6">
+                </div>
+            </div>
+            <button type="submit" id="submitBtnMiembro" class="button-base button-primary text-lg !mt-8">Registrar Miembro</button>
+        </form>
     </div>
 
-    <!-- Enlace al archivo JavaScript externo -->
     <script src="../js/utils.js"></script>
     <script src="../js/api.js"></script>
-    <script src="../js/gestionar_miembros.js" defer></script>
+    <script>
+        document.getElementById('registroMiembroForm')?.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtnMiembro');
+
+            const contrasena = document.getElementById('contrasenaMiembro').value;
+            const confirmarContrasena = document.getElementById('confirmarContrasenaMiembro').value;
+
+            if (contrasena !== confirmarContrasena) {
+                if(typeof showNotification === 'function') showNotification('Las contraseñas no coinciden.', 'error');
+                return;
+            }
+             if (contrasena.length < 6) {
+                if(typeof showNotification === 'function') showNotification('La contraseña debe tener al menos 6 caracteres.', 'error');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const miembroData = Object.fromEntries(formData.entries());
+            delete miembroData.confirmarContrasena;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registrando...';
+            submitBtn.classList.add('button-disabled');
+
+            try {
+                const nuevoMiembro = await registrarMiembro(miembroData);
+                if(typeof showNotification === 'function') {
+                    showNotification(`Miembro (ID: ${nuevoMiembro.id}) registrado. Redirigiendo a captura de imágenes...`, 'success', 4000);
+                }
+                
+                // Redirect to image capture page with member's ID and name
+                setTimeout(() => {
+                    const nombreCompleto = `${miembroData.nombre} ${miembroData.apellido}`;
+                    window.location.href = `captura_imagenes_miembro.html?miembroId=${nuevoMiembro.id}&nombre=${encodeURIComponent(nombreCompleto)}&origin=registro_miembro`;
+                }, 4000);
+
+            } catch (error) {
+                if(typeof showNotification === 'function') showNotification(`Error al registrar: ${error.message}`, 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Registrar Miembro';
+                submitBtn.classList.remove('button-disabled');
+            }
+        });
+    </script>
 </body>
 </html>

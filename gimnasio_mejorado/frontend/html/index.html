@@ -4,37 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administración Gimnasio</title>
-    <script src="https://cdn.tailwindcss.com"></script> 
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css"> 
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark background consistent with login */
+        }
+        .main-container {
+            background-color: #2d3748; /* Slightly lighter card background */
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 500px;
+        }
+        .button-base {
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+            padding: 0.85rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .button-primary {
+            background-color: #4299e1; /* A nice blue for admin actions */
+            color: white;
+        }
+        .button-primary:hover {
+            background-color: #3182ce;
+        }
+        .button-secondary {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        .button-secondary:hover {
+            background-color: #718096;
+        }
+        .button-accent {
+            background-color: #48bb78; /* Green for key public action */
+            color: white;
+        }
+        .button-accent:hover {
+            background-color: #38a169;
+        }
+        .button-danger {
+            background-color: #e53e3e; /* Red for logout/danger */
+            color: white;
+        }
+        .button-danger:hover {
+            background-color: #c53030;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 sm:p-12 rounded-xl shadow-2xl w-full max-w-md">
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="main-container">
+        <div class="text-center mb-8">
+            <svg class="mx-auto h-20 w-20 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.25278C12 6.25278 10.8333 5 8.5 5C6.16667 5 5 6.25278 5 6.25278V17.7472C5 17.7472 6.16667 19 8.5 19C10.8333 19 12 17.7472 12 17.7472M12 6.25278C12 6.25278 13.1667 5 15.5 5C17.8333 5 19 6.25278 19 6.25278V17.7472C19 17.7472 17.8333 19 15.5 19C13.1667 19 12 17.7472 12 17.7472M12 6.25278V17.7472"/>
+            </svg>
+            <h1 class="text-4xl font-bold text-gray-100 mt-4">Gym Control</h1>
+            <p class="text-gray-400 mt-2">Plataforma de Administración</p>
+        </div>
+
         <div id="welcomeMessage" class="text-center mb-6 hidden">
-            <p class="text-xl text-gray-700">Bienvenido/a, <strong id="managerName" class="text-blue-600"></strong>!</p>
+            <p class="text-lg text-gray-300">Bienvenido/a, <strong id="managerName" class="text-blue-400"></strong></p>
         </div>
-        <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-10">Gimnasio XYZ</h1>
         
-        <div id="publicOptions" class="space-y-5">
-            <a href="control_acceso.html" class="block text-center bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Control de Acceso</a>
-            <!-- El botón de Iniciar Sesión se añade aquí por JavaScript -->
+        <div id="publicOptions" class="space-y-4">
+            <a href="control_acceso.html" class="button-base button-accent">Control de Acceso</a>
         </div>
 
-        <div id="adminOptions" class="space-y-5 mt-5 hidden">
-            <h2 class="text-xl font-semibold text-gray-700 text-center border-b pb-2 mb-4">Panel de Administración</h2>
-            <a href="registro_miembro.html" class="admin-button block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Registro de Miembros</a>
-            <a href="registro_gerente.html" class="admin-button block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Registro Gerente</a>
-            <a href="gestionar_miembros.html" class="admin-button block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Gestionar Miembros</a>
-            <a href="gestionar_gerentes.html" class="admin-button block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Gestionar Gerentes</a>
-            <a href="reporte_acceso.html" class="admin-button block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg">Reporte de Acceso</a>
+        <div id="adminOptions" class="space-y-4 mt-6 hidden">
+            <hr class="border-gray-600 my-6">
+            <h2 class="text-xl font-semibold text-gray-200 text-center pb-2 mb-2">Panel de Administración</h2>
+            <a href="gestionar_miembros.html" class="button-base button-primary">Gestionar Miembros</a>
+            <a href="gestionar_gerentes.html" class="button-base button-primary">Gestionar Gerentes</a>
+            <a href="reporte_acceso.html" class="button-base button-primary">Reporte de Acceso</a>
         </div>
 
-        <div id="sessionControls" class="mt-8">
-            <!-- El botón de Iniciar/Cerrar Sesión se generará dinámicamente -->
+        <div id="sessionControls" class="mt-6">
+            <!-- El botón de Iniciar/Cerrar Sesión se generará dinámicamente aquí -->
         </div>
     </div>
 
-    <script src="../js/utils.js"></script> 
+    <script src="../js/utils.js"></script>
     <script>
         const publicOptions = document.getElementById('publicOptions');
         const adminOptions = document.getElementById('adminOptions');
@@ -42,84 +100,60 @@
         const welcomeMessageDiv = document.getElementById('welcomeMessage');
         const managerNameSpan = document.getElementById('managerName');
 
-        console.log("[Index.html] Script cargado. Elementos iniciales:", {publicOptions, adminOptions, sessionControls, welcomeMessageDiv, managerNameSpan});
-
         function updateUIBasedOnSession() {
-            console.log("[Index.html] updateUIBasedOnSession() llamada.");
             const gerenteSessionData = localStorage.getItem('gerenteSession');
-            console.log("[Index.html] gerenteSessionData de localStorage:", gerenteSessionData);
             
             if (gerenteSessionData) {
                 try {
                     const gerente = JSON.parse(gerenteSessionData);
-                    console.log("[Index.html] Sesión de gerente encontrada y parseada:", gerente);
-                    // Usuario está logueado
-                    if(adminOptions) adminOptions.classList.remove('hidden');
+                    // User is logged in
+                    adminOptions.classList.remove('hidden');
                     if(welcomeMessageDiv && managerNameSpan) {
                         managerNameSpan.textContent = gerente.nombre || gerente.correo || 'Gerente';
                         welcomeMessageDiv.classList.remove('hidden');
                     }
                     
                     if(sessionControls) {
-                        console.log("[Index.html] Configurando botón de Cerrar Sesión.");
                         sessionControls.innerHTML = `
-                            <button id="btnLogout" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out text-lg">
+                            <button id="btnLogout" class="button-base button-danger">
                                 Cerrar Sesión
                             </button>`;
                         document.getElementById('btnLogout')?.addEventListener('click', () => {
-                            console.log("[Index.html] Botón Cerrar Sesión clickeado.");
                             localStorage.removeItem('gerenteSession');
-                            showNotification('Sesión cerrada.', 'info');
+                            // Assuming showNotification is a global function from utils.js
+                            if(typeof showNotification === 'function') {
+                                showNotification('Sesión cerrada.', 'info');
+                            }
                             setTimeout(() => window.location.reload(), 1500); 
                         });
                     }
-                    // Eliminar el botón de login si existe en publicOptions
-                    const existingLoginButton = publicOptions?.querySelector('a[href="login_gerente.html"]');
-                    if (existingLoginButton) {
-                        console.log("[Index.html] Eliminando botón de Iniciar Sesión existente de publicOptions.");
-                        existingLoginButton.remove();
-                    }
-
                 } catch (e) {
-                    console.error("[Index.html] Error al parsear datos de sesión del gerente:", e);
+                    console.error("Error parsing manager session data:", e);
                     localStorage.removeItem('gerenteSession'); 
-                    setupLoginButton(); // Configurar UI para estado no logueado
+                    setupLoginButton();
                 }
             } else {
-                // Usuario no está logueado
-                console.log("[Index.html] No hay sesión de gerente. Configurando para estado no logueado.");
-                if(adminOptions) adminOptions.classList.add('hidden');
-                if(welcomeMessageDiv) welcomeMessageDiv.classList.add('hidden');
+                // User is not logged in
+                adminOptions.classList.add('hidden');
+                welcomeMessageDiv.classList.add('hidden');
                 setupLoginButton();
             }
         }
 
         function setupLoginButton() {
-            console.log("[Index.html] setupLoginButton() llamada.");
-             if(publicOptions && sessionControls) { 
-                // Asegurar que el área de control de sesión (logout) esté vacía
+             if(sessionControls) { 
+                // Clear any existing session controls (like the logout button)
                 sessionControls.innerHTML = ''; 
                 
-                // Añadir botón de Iniciar Sesión a publicOptions si no existe
-                if (!publicOptions.querySelector('a[href="login_gerente.html"]')) {
-                    console.log("[Index.html] Creando y añadiendo botón de Iniciar Sesión a publicOptions.");
-                    const loginLink = document.createElement('a');
-                    loginLink.href = 'login_gerente.html';
-                    loginLink.className = 'block text-center bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full text-lg mt-5';
-                    loginLink.textContent = 'Iniciar Sesión (Gerente)';
-                    publicOptions.appendChild(loginLink);
-                } else {
-                    console.log("[Index.html] Botón de Iniciar Sesión ya existe en publicOptions.");
-                }
-            } else {
-                console.error("[Index.html] Error en setupLoginButton: publicOptions o sessionControls no encontrados.");
+                const loginLink = document.createElement('a');
+                loginLink.href = 'login_gerente.html';
+                loginLink.className = 'button-base button-secondary';
+                loginLink.textContent = 'Iniciar Sesión (Gerente)';
+                sessionControls.appendChild(loginLink);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("[Index.html] DOMContentLoaded - llamando a updateUIBasedOnSession.");
-            updateUIBasedOnSession();
-        });
+        document.addEventListener('DOMContentLoaded', updateUIBasedOnSession);
     </script>
 </body>
 </html>

@@ -8,27 +8,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .camera-container {
-            @apply w-full max-w-sm mx-auto bg-gray-200 rounded-lg shadow-inner my-4;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .main-container {
+            background-color: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 500px;
+        }
+        .camera-view {
+            background-color: #1a202c;
+            border-radius: 0.75rem;
+            min-height: 300px;
+        }
+        .button-base {
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .button-primary { background-color: #4299e1; color: white; }
+        .button-primary:hover { background-color: #3182ce; }
+        .button-success { background-color: #48bb78; color: white; }
+        .button-success:hover { background-color: #38a169; }
+        .button-secondary { background-color: #718096; color: white; }
+        .button-secondary:hover { background-color: #4a5568; }
+        .button-disabled {
+             background-color: #4a5568;
+             cursor: not-allowed;
+             opacity: 0.7;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md">
-        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">Control de Acceso Facial</h1>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="main-container">
+        <h1 class="text-3xl font-bold text-center text-gray-100 mb-6">Control de Acceso Facial</h1>
 
-        <div class="camera-container">
-            <video id="cameraFeedAcceso" playsinline autoplay muted class="w-full h-auto rounded-lg object-cover"></video>
+        <div class="camera-view w-full max-w-sm mx-auto my-4 flex items-center justify-center">
+            <video id="cameraFeedAcceso" playsinline autoplay muted class="w-full h-auto rounded-lg object-cover hidden"></video>
             <canvas id="photoCanvasAcceso" class="hidden"></canvas>
+             <img id="placeholderImage" src="https://placehold.co/600x400/1a202c/e2e8f0?text=Cámara+Desactivada" alt="Vista de cámara" class="w-full h-full object-cover rounded-lg">
         </div>
         
-        <div class="space-y-3">
-            <button id="btnIniciarCamaraFacial" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md">Iniciar Cámara</button>
-            <button id="btnVerificarAcceso" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md hidden">Verificar Acceso</button>
+        <div class="space-y-4">
+            <button id="btnIniciarCamaraFacial" class="button-base button-primary">Iniciar Cámara</button>
+            <button id="btnVerificarAcceso" class="button-base button-success hidden">Verificar Acceso</button>
         </div>
 
-        <div class="mt-8 text-center border-t pt-4">
-            <a href="index.html" class="text-sm text-blue-600 hover:text-blue-800">Volver al Menú Principal</a>
+        <div class="mt-8 text-center border-t border-gray-700 pt-6">
+            <a href="index.html" class="text-sm text-blue-400 hover:text-blue-300">Volver al Menú Principal</a>
         </div>
     </div>
 
@@ -39,6 +77,7 @@
         const cameraFeedAcceso = document.getElementById('cameraFeedAcceso');
         const photoCanvasAcceso = document.getElementById('photoCanvasAcceso');
         const btnVerificarAcceso = document.getElementById('btnVerificarAcceso');
+        const placeholderImage = document.getElementById('placeholderImage');
         let stream = null;
         
         btnIniciarCamaraFacial.addEventListener('click', async () => {
@@ -46,25 +85,31 @@
                 stream.getTracks().forEach(track => track.stop());
                 stream = null;
                 cameraFeedAcceso.srcObject = null;
+                cameraFeedAcceso.classList.add('hidden');
+                placeholderImage.classList.remove('hidden');
                 btnIniciarCamaraFacial.textContent = 'Iniciar Cámara';
+                btnIniciarCamaraFacial.classList.replace('button-secondary', 'button-primary');
                 btnVerificarAcceso.classList.add('hidden');
-                showToast('Cámara detenida.');
+                if(typeof showToast === 'function') showToast('Cámara detenida.');
             } else {
                 try {
                     stream = await navigator.mediaDevices.getUserMedia({ video: true });
                     cameraFeedAcceso.srcObject = stream;
+                    cameraFeedAcceso.classList.remove('hidden');
+                    placeholderImage.classList.add('hidden');
                     btnIniciarCamaraFacial.textContent = 'Detener Cámara';
+                    btnIniciarCamaraFacial.classList.replace('button-primary', 'button-secondary');
                     btnVerificarAcceso.classList.remove('hidden');
-                    showToast('Cámara iniciada. Centre su rostro y verifique.', 'info');
+                    if(typeof showToast === 'function') showToast('Cámara iniciada. Centre su rostro y verifique.', 'info');
                 } catch (error) {
-                    showToast('No se pudo acceder a la cámara.', 'error');
+                    if(typeof showToast === 'function') showToast('No se pudo acceder a la cámara.', 'error');
                 }
             }
         });
 
         btnVerificarAcceso.addEventListener('click', async () => {
             if (!stream || !stream.active) {
-                showToast('La cámara no está activa.', 'error');
+                if(typeof showToast === 'function') showToast('La cámara no está activa.', 'error');
                 return;
             }
             const canvas = photoCanvasAcceso;
@@ -73,21 +118,27 @@
             canvas.getContext('2d').drawImage(cameraFeedAcceso, 0, 0, canvas.width, canvas.height);
             canvas.toBlob(async (blob) => {
                 btnVerificarAcceso.disabled = true;
+                btnVerificarAcceso.classList.add('button-disabled');
                 btnVerificarAcceso.textContent = 'Verificando...';
                 try {
                     const response = await verificarRostroAcceso(blob);
                     if (response.accesoPermitido) {
-                        showToast(`Acceso ${response.tipoAccesoRegistrado} concedido a: ${response.nombreMiembro}`, 'success');
+                        if(typeof showToast === 'function') showToast(`Acceso ${response.tipoAccesoRegistrado} concedido a: ${response.nombreMiembro}`, 'success');
                     } else {
-                        showToast(response.message || 'Acceso denegado.', 'error');
+                        if(typeof showToast === 'function') showToast(response.message || 'Acceso denegado.', 'error');
                     }
                 } catch (error) {
-                    showToast(`Error: ${error.message}`, 'error');
+                    if(typeof showToast === 'function') showToast(`Error: ${error.message}`, 'error');
                 } finally {
                     btnVerificarAcceso.disabled = false;
+                    btnVerificarAcceso.classList.remove('button-disabled');
                     btnVerificarAcceso.textContent = 'Verificar Acceso';
                 }
             }, 'image/jpeg');
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (stream) { stream.getTracks().forEach(track => track.stop()); }
         });
     </script>
 </body>
